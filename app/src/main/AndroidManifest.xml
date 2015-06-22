@@ -3,15 +3,15 @@
     package="com.ver2point0.android.blocspot">
 
     <application
-        android:name=".BlocSpotApplication"
+        android:name="com.ver2point0.android.blocspot.BlocSpotApplication"
         android:allowBackup="true"
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activity.BlocSpotActivity">
+        <activity android:name="com.ver2point0.android.blocspot.ui.activity.BlocSpotActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-                <action android:name="android.intent.categry.LAUNCHER"/>
+                <action android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
     </application>
