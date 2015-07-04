@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Go Places</string>
+
+    <string name="maps_api_key">AIzaSyBAUmIqphWvpc_YppTWRAfnCR_bno27ny4</string>
 </resources>
