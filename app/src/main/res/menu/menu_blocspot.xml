@@ -6,13 +6,8 @@
     tools:context=".BlocSpotActivity">
 
     <item
-        android:id="@+id/action_one"
-        android:title="action1"
-        app:showAsAction="always"/>
-
-    <item
-        android:id="@+id/action_two"
-        android:title="action2"
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings"
         app:showAsAction="never"/>
 
 </menu>

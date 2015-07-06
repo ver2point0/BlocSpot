@@ -3,17 +3,23 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="com.ver2point0.android.blocspot.ui.fragment.POIListFragment">
 
     <!--<include layout="@layout/toolbar_blocspot"/>-->
 
     <fragment
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/map"
+        android:id="@+id/f_map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="com.google.android.gms.maps.MapFragment"
         tools:layout="@layout/activity_blocspot"/>
 
+    <ListView
+        android:id="@+id/lv_poiList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
 </RelativeLayout>

@@ -3,4 +3,17 @@
     <string name="app_name">Go Places</string>
 
     <string name="maps_api_key">AIzaSyBAUmIqphWvpc_YppTWRAfnCR_bno27ny4</string>
+    <string name="action_settings">Settings</string>
+
+    <string-array name="places">
+        <item>ATM</item>
+        <item>Bank</item>
+        <item>Cafe</item>
+        <item>Fire-Station</item>
+        <item>Hospital</item>
+        <item>Pharmacy</item>
+        <item>Police</item>
+        <item>Restaurant</item>
+        <item>Shopping Mall</item>
+    </string-array>
 </resources>
