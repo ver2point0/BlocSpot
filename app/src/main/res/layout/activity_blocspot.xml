@@ -6,6 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/primary">
 
-    <include layout="@layout/toolbar_blocspot"/>
+    <!--<include layout="@layout/toolbar_blocspot"/>-->
 
 </LinearLayout>
