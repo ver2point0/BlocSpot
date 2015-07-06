@@ -18,8 +18,19 @@
         tools:layout="@layout/activity_blocspot"/>
 
     <ListView
-        android:id="@+id/lv_poiList"
+        android:id="@+id/lv_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"/>
+
+    <TextView
+        android:id="@+id/tv_empty_list_view"
+        android:text="@string/empty_poi_list"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:visibility="gone"/>
 </RelativeLayout>

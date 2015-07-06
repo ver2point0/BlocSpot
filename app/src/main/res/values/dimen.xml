@@ -4,4 +4,6 @@
     <!-- Default screen margin, top, right, bottom, left -->
     <dimen name="padding_margins">16dp</dimen>
 
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+
 </resources>

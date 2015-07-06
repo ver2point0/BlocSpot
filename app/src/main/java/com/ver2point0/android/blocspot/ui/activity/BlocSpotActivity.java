@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -42,6 +43,7 @@ public class BlocSpotActivity extends Activity {
     private boolean mListState = true;
     private MapFragment mMapFragment;
     private ListView mPoiList;
+    private TextView mEmptyView;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -58,7 +60,9 @@ public class BlocSpotActivity extends Activity {
         }
 
         mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.f_map);
-        mPoiList = (ListView) findViewById(R.id.lv_poiList);
+        mPoiList = (ListView) findViewById(R.id.lv_list);
+        mEmptyView = (TextView) findViewById(R.id.tv_empty_list_view);
+        mPoiList.setEmptyView(mEmptyView);
 
         initCompo();
         mPlaces = getResources().getStringArray(R.array.places);
