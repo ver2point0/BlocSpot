@@ -2,6 +2,8 @@ package com.ver2point0.android.blocspot.places;
 
 import android.util.Log;
 
+import com.ver2point0.android.blocspot.util.Constants;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,27 +58,25 @@ public class PlacesService {
         return null;
     }
 
-    // https://maps.googleapis.com/maps/api/place/search/json?location=28.632808,77.218276&radius=500&types=atm&sensor=false&key=apikey
     private String makeUrl(double latitude, double longitude, String place) {
-        StringBuilder urlString = new StringBuilder(
-                "https://maps.googleapis.com/maps/api/place/search/json?");
+        StringBuilder urlString = new StringBuilder(Constants.BASE_URL);
 
         if (place.equals("")) {
-            urlString.append("&location=");
+            urlString.append(Constants.LOCATION);
             urlString.append(Double.toString(latitude));
-            urlString.append(",");
+            urlString.append(Constants.COMMA);
             urlString.append(Double.toString(longitude));
-            urlString.append("&radious=1000");
-            // urlString.append("&types="+place);
-            urlString.append("&sensor=false&key=" + API_KEY);
+            urlString.append(Constants.RANK_BY_DISTANCE);
+            urlString.append(Constants.ALL_PLACE_TYPES);
+            urlString.append(Constants.SENSOR_AND_KEY + API_KEY);
         } else {
-            urlString.append("&location=");
+            urlString.append(Constants.LOCATION);
             urlString.append(Double.toString(latitude));
-            urlString.append(",");
+            urlString.append(Constants.COMMA);
             urlString.append(Double.toString(longitude));
             urlString.append("&radius=1000");
             urlString.append("&types=" + place);
-            urlString.append("&sensor=false&key=" + API_KEY);
+            urlString.append(Constants.SENSOR_AND_KEY + API_KEY);
         }
         return urlString.toString();
     }

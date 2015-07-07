@@ -117,7 +117,7 @@ public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCall
             super.onPreExecute();
             dialog = new ProgressDialog(context);
             dialog.setCancelable(false);
-            dialog.setMessage("Loading..");
+            dialog.setMessage(getString(R.string.loading_message));
             dialog.isIndeterminate();
             dialog.show();
         } // end method onPreExecute()
@@ -125,7 +125,7 @@ public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCall
         @Override
         protected ArrayList<Place> doInBackground(Void... arg0) {
             PlacesService service = new PlacesService(
-                    getString(R.string.maps_api_key));
+                    Constants.API_KEY);
             ArrayList<Place> findPlaces = service.findPlaces(mLocation.getLatitude(),
                     mLocation.getLongitude(), places);
 
