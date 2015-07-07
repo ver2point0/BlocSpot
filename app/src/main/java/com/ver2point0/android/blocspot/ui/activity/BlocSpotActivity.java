@@ -1,15 +1,16 @@
 package com.ver2point0.android.blocspot.ui.activity;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -33,7 +35,7 @@ import com.ver2point0.android.blocspot.util.Constants;
 import java.util.ArrayList;
 
 
-public class BlocSpotActivity extends Activity {
+public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private final String TAG = getClass().getSimpleName();
     private GoogleMap mGoogleMap;
@@ -86,12 +88,13 @@ public class BlocSpotActivity extends Activity {
                 });
 
         if (mListState == true) {
-            getFragmentManager().beginTransaction().hide(getFragmentManager()
-                .findFragmentById(R.id.f_map)).commit();
+            getFragmentManager().beginTransaction().hide(mMapFragment).commit();
         } else if (mListState == false) {
             mPoiList.setVisibility(View.INVISIBLE);
         }
 
+        @Override
+        public void onMapReady(GoogleMap googleMap) {}
 
 
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_blocspot);
@@ -136,17 +139,20 @@ public class BlocSpotActivity extends Activity {
         @Override
         protected void onPostExecute(ArrayList<Place> result) {
             super.onPostExecute(result);
+            ArrayList<String> resultName = new ArrayList<String>();
+
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
             for (int i = 0; i < result.size(); i++) {
                 mGoogleMap.addMarker(new MarkerOptions()
-                        .title(result.get(i).getName()
-                                .position(new LatLng(result.get(i).getLatitude(),
-                                        result.get(i).getLongitude()))
-                                .icon(BitmapDescriptorFactory
-                                        .fromResource(R.drawable.pin))
-                                .snippet(result.get(i).getVicinity())));
+                        .title(result.get(i).getName())
+                        .position(new LatLng(result.get(i).getLatitude(),
+                                result.get(i).getLongitude()))
+                        .icon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.pin))
+                        .snippet(result.get(i).getVicinity()));
+                        resultName.add(i, result.get(i).getName());
             }
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(result.get(0).getLatitude(), result
@@ -167,8 +173,12 @@ public class BlocSpotActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // inflate the menu; this add items to the action bar if it is present
-        getMenuInflater().inflate(R.menu.menu_blocspot, menu);
+        if (mListState == true) {
+            getMenuInflater().inflate(R.menu.menu_list, menu);
+        }
+        if (mListState == false) {
+            getMenuInflater().inflate(R.menu.menu_map, menu);
+        }
         return true;
     }
 
@@ -176,15 +186,18 @@ public class BlocSpotActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            if (mListState == true) {
-                getFragmentManager().beginTransaction().show(mMapFragment).commit();
-                mPoiList.setVisibility(View.INVISIBLE);
-                mListState = false;
-            } else {
-                getFragmentManager().beginTransaction().hide(mMapFragment).commit();
-                mPoiList.setVisibility(View.VISIBLE);
-                mListState = true;
-            }
+//            if (mListState == true) {
+//                getFragmentManager().beginTransaction().show(mMapFragment).commit();
+//                mPoiList.setVisibility(View.INVISIBLE);
+//                mListState = false;
+//            } else {
+//                getFragmentManager().beginTransaction().hide(mMapFragment).commit();
+//                mPoiList.setVisibility(View.VISIBLE);
+//                mListState = true;
+//            }
+//            this.invalidateOptionsMenu();
+            Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -229,8 +242,5 @@ public class BlocSpotActivity extends Activity {
 
         }
     };
-
-
-
 
 } // end class BlocSpotActivity

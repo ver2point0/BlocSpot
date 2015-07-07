@@ -8,15 +8,6 @@
 
     <!--<include layout="@layout/toolbar_blocspot"/>-->
 
-    <fragment
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/f_map"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.google.android.gms.maps.MapFragment"
-        tools:layout="@layout/activity_blocspot"/>
-
     <ListView
         android:id="@+id/lv_list"
         android:layout_width="match_parent"
@@ -33,4 +24,13 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:visibility="gone"/>
+
+    <fragment
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/f_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.google.android.gms.maps.MapFragment"
+        tools:layout="@layout/activity_blocspot"/>
 </RelativeLayout>
