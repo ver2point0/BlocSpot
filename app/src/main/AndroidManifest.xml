@@ -29,18 +29,40 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".SearchActivity"/>
         </activity>
+
         <activity
             android:name=".ui.activity.SearchActivity"
-            android:label="@string/title_activity_search" >
+            android:parentActivityName=".ui.activity.BlocSpotActivity"
+            android:label="@string/title_activity_search">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
         </activity>
+
+        <activity
+            android:name="com.ver2point0.android.blocspot.adapter.PlacesSearchItemAdapter"
+            android:label="@string/title_activity_places_search_item_adapter">
+        </activity>
+
         <!-- Meta data -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/maps_api_key" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-    </application>
 
+    </application>
 </manifest>

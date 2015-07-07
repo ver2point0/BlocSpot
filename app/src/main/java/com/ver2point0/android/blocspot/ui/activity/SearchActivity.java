@@ -2,7 +2,9 @@ package com.ver2point0.android.blocspot.ui.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -12,11 +14,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.ver2point0.android.blocspot.R;
+import com.ver2point0.android.blocspot.adapter.PlacesSearchItemAdapter;
 import com.ver2point0.android.blocspot.places.Place;
 import com.ver2point0.android.blocspot.places.PlacesService;
 import com.ver2point0.android.blocspot.util.Constants;
@@ -31,16 +33,35 @@ public class SearchActivity extends Activity {
     private Location mLocation;
     private String[] mPlaces;
     private ListView mSearchList;
+    private String mQuery;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(Constants.QUERY_TEXT, mQuery);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        if (savedInstanceState != null) {
+            mQuery = savedInstanceState.getString(Constants.QUERY_TEXT);
+        }
+
+        if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+            mQuery = getIntent().getStringExtra(SearchManager.QUERY);
+        }
+
         mPlaces = getResources().getStringArray(R.array.places);
         currentLocation();
-
         mSearchList = (ListView) findViewById(R.id.lv_searchList);
+
+        if (mQuery != null) {
+            new GetPlaces(SearchActivity.this,
+                    mQuery.toLowerCase().replace("-", "_").replace(" ", "_")).execute();
+        }
     }
 
     @Override
@@ -48,11 +69,13 @@ public class SearchActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
 
-        MenuItem searchViewItem = menu.findItem(R.id.item_search);
-        SearchView searchView = (SearchView) searchViewItem.getActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.lv_searchList).getActionView();
         searchView.setIconifiedByDefault(false);
         searchView.setFocusable(true);
         searchView.requestFocusFromTouch();
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         return true;
     }
 
@@ -144,9 +167,7 @@ public class SearchActivity extends Activity {
                 resultName.add(i, result.get(i).getName());
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
-                    android.R.layout.simple_expandable_list_item_1,
-                    android.R.id.text1, resultName);
+            PlacesSearchItemAdapter adapter = new PlacesSearchItemAdapter(context, result);
             mSearchList.setAdapter(adapter);
         }
 

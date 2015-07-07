@@ -1,6 +1,7 @@
 package com.ver2point0.android.blocspot.places;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,6 +15,7 @@ public class Place {
     private String mVicinity;
     private Double mLatitude;
     private Double mLongitude;
+    private JSONArray mTypes;
 
     public String getId() {
         return mId;
@@ -63,6 +65,14 @@ public class Place {
         mLongitude = longitude;
     }
 
+    public JSONArray getTypes() {
+        return mTypes;
+    }
+
+    public void setTypes(JSONArray types) {
+        mTypes = types;
+    }
+
     static Place jsonToPontoReferencia(JSONObject pontoReferencia) {
         try {
             Place result = new Place();
@@ -74,6 +84,7 @@ public class Place {
             result.setName(pontoReferencia.getString("name"));
             result.setVicinity(pontoReferencia.getString("vicinity"));
             result.setId(pontoReferencia.getString("id"));
+            result.setTypes(pontoReferencia.getJSONArray("types"));
             return result;
         } catch (JSONException ex) {
             Logger.getLogger(Place.class.getName()).log(Level.SEVERE, null, ex);
