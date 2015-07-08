@@ -1,23 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ver2point0.android.blocspot">
+    package="com.ver2point0.android.blocspot" >
+
+    <!-- PERMISSIONS -->
+
+    <permission
+        android:name="com.ver2point0.android.blocspot.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.ver2point0.android.blocspot.permission.MAPS_RECEIVE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
     <application
-        android:name="com.ver2point0.android.blocspot.BlocSpotApplication"
+        android:name=".BlocSpotApplication"
         android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:icon="@drawable/ic_launch_icon"
-        android:theme="@style/AppTheme">
-        <activity
-            android:name="com.ver2point0.android.blocspot.ui.activity.BlocSpotActivity">
+        android:theme="@style/AppTheme" >
+        <activity android:name=".ui.activity.BlocSpotActivity" >
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-                <action android:name="android.intent.action.MAIN"/>
-
-                <action android:name="android.intent.category.LAUNCHER"/>
-
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".SearchActivity"/>
         </activity>
+
+        <activity
+            android:name=".ui.activity.SearchActivity"
+            android:parentActivityName=".ui.activity.BlocSpotActivity"
+            android:label="@string/title_activity_search">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
+        </activity>
+
+        <activity
+            android:name="com.ver2point0.android.blocspot.adapter.PlacesSearchItemAdapter"
+            android:label="@string/title_activity_places_search_item_adapter">
+        </activity>
+
+        <!-- Meta data -->
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="@string/maps_api_key" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
     </application>
 </manifest>
