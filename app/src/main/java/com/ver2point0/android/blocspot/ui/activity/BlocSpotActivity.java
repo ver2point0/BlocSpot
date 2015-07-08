@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -27,11 +28,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.ver2point0.android.blocspot.R;
+import com.ver2point0.android.blocspot.category.Category;
 import com.ver2point0.android.blocspot.places.Place;
 import com.ver2point0.android.blocspot.places.PlacesService;
 import com.ver2point0.android.blocspot.util.Constants;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 
@@ -66,6 +71,8 @@ public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCall
         mEmptyView = (TextView) findViewById(R.id.tv_empty_list_view);
         mPoiList.setEmptyView(mEmptyView);
 
+        checkCategoryPreference();
+
         initCompo();
         mPlaces = getResources().getStringArray(R.array.places);
         currentLocation();
@@ -96,6 +103,24 @@ public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCall
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_blocspot);
 //        setSupportActionBar(toolbar);
     } // end method onCreate
+
+    private void checkCategoryPreference() {
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.MAIN_PREFS, 0);
+        String json = sharedPreferences.getString(Constants.CATEGORY_ARRAY, null);
+        Type type = new TypeToken<Category>(){}.getType();
+        ArrayList<Category> categories = new Gson().fromJson(json, type);
+        if (categories == null) {
+            categories = new ArrayList<Category>();
+            Category uncategorized = new Category(Constants.CATEGORY_UNCATEGORIZED, Constants.CYAN);
+            categories.add(uncategorized);
+            String jsonCat = new Gson().toJson(categories);
+            SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+            prefsEditor.putString(Constants.CATEGORY_ARRAY, jsonCat);
+            prefsEditor.commit();
+        }
+    }
+
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {}
@@ -141,7 +166,11 @@ public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCall
             ArrayList<String> resultName = new ArrayList<String>();
 
             if (dialog.isShowing()) {
-                dialog.dismiss();
+                try {
+                    dialog.dismiss();
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
             }
             for (int i = 0; i < result.size(); i++) {
                 mGoogleMap.addMarker(new MarkerOptions()

@@ -6,6 +6,9 @@ public class Constants {
     public static final String LIST_STATE = "listState";
     public static final String QUERY_TEXT = "queryText";
 
+    public static final String MAIN_PREFS = "mainPrefs";
+    public static final String CATEGORY_ARRAY = "categoryArray";
+
     public static final String API_KEY = "AIzaSyBAUmIqphWvpc_YppTWRAfnCR_bno27ny4";
 
     public static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/search/json?";
@@ -27,7 +30,11 @@ public class Constants {
     public static final String KEYWORD = "&keyword=";
     public static final String SENSOR_AND_KEY = "&sensor=false&key=";
     public static final String RANK_BY_DISTANCE = "&rankby=distance";
-    public static final String COMMA = ",";
+
+    public static final String CYAN = "cyan";
 
     public static final String EMPTY_STRING = "";
+    public static final String COMMA = ",";
+    public static final String CATEGORY_UNCATEGORIZED = "categoryUncategorized";
+
 }

@@ -1,6 +1,5 @@
 package com.ver2point0.android.blocspot.ui.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -11,6 +10,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,17 +18,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.ver2point0.android.blocspot.R;
 import com.ver2point0.android.blocspot.adapter.PlacesSearchItemAdapter;
 import com.ver2point0.android.blocspot.places.Place;
 import com.ver2point0.android.blocspot.places.PlacesService;
+import com.ver2point0.android.blocspot.ui.fragment.SavePoiDialogFragment;
 import com.ver2point0.android.blocspot.util.Constants;
 
 import java.util.ArrayList;
 
-public class SearchActivity extends Activity {
+public class SearchActivity extends FragmentActivity {
 
     private final String TAG = getClass().getSimpleName();
 
@@ -70,7 +70,9 @@ public class SearchActivity extends Activity {
         mSearchList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Toast.makeText(SearchActivity.this, String.valueOf(position), Toast.LENGTH_LONG).show();
+                Place place = (Place) adapterView.getItemAtPosition(position);
+                SavePoiDialogFragment savePoiDialogFragment = new SavePoiDialogFragment(SearchActivity.this, place);
+                savePoiDialogFragment.show(getSupportFragmentManager(), "dialog");
             }
         });
     }

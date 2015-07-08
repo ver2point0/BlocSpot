@@ -10,4 +10,6 @@
 
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#727272</color>
+
+    <color name="cyan">#00FFFF</color>
 </resources>
