@@ -72,7 +72,7 @@ public class SearchActivity extends FragmentActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Place place = (Place) adapterView.getItemAtPosition(position);
                 SavePoiDialogFragment savePoiDialogFragment = new SavePoiDialogFragment(SearchActivity.this, place);
-                savePoiDialogFragment.show(getSupportFragmentManager(), "dialog");
+                savePoiDialogFragment.show(getFragmentManager(), "dialog");
             }
         });
     }
