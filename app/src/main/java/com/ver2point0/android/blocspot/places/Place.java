@@ -73,18 +73,18 @@ public class Place {
         mTypes = types;
     }
 
-    static Place jsonToPontoReferencia(JSONObject pontoReferencia) {
+    static Place jsonToReferencePoint(JSONObject referencePoint) {
         try {
             Place result = new Place();
-            JSONObject geometry = (JSONObject) pontoReferencia.get("geometry");
+            JSONObject geometry = (JSONObject) referencePoint.get("geometry");
             JSONObject location = (JSONObject) geometry.get("location");
             result.setLatitude((Double) location.get("lat"));
             result.setLongitude((Double) location.get("lng"));
-            result.setIcon(pontoReferencia.getString("icon"));
-            result.setName(pontoReferencia.getString("name"));
-            result.setVicinity(pontoReferencia.getString("vicinity"));
-            result.setId(pontoReferencia.getString("id"));
-            result.setTypes(pontoReferencia.getJSONArray("types"));
+            result.setIcon(referencePoint.getString("icon"));
+            result.setName(referencePoint.getString("name"));
+            result.setVicinity(referencePoint.getString("vicinity"));
+            result.setId(referencePoint.getString("id"));
+            result.setTypes(referencePoint.getJSONArray("types"));
             return result;
         } catch (JSONException ex) {
             Logger.getLogger(Place.class.getName()).log(Level.SEVERE, null, ex);

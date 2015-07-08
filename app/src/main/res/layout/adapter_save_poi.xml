@@ -20,12 +20,5 @@
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/tv_place_dist"/>
 
-        <CheckBox
-            android:id="@+id/cb_check_box"
-            android:text=""
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"/>
-
     </RelativeLayout>
 </LinearLayout>

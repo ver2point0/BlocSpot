@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,6 +34,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ver2point0.android.blocspot.R;
 import com.ver2point0.android.blocspot.category.Category;
+import com.ver2point0.android.blocspot.database.table.PoiTable;
 import com.ver2point0.android.blocspot.places.Place;
 import com.ver2point0.android.blocspot.places.PlacesService;
 import com.ver2point0.android.blocspot.util.Constants;
@@ -51,6 +54,7 @@ public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCall
     private MapFragment mMapFragment;
     private ListView mPoiList;
     private TextView mEmptyView;
+    private PoiTable mPoiTable = new PoiTable();
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -190,9 +194,15 @@ public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCall
                     .build();
             mGoogleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
+
+            Cursor cursor = mPoiTable.notesQuery();
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(BlocSpotActivity.this,
+                    android.R.layout.simple_expandable_list_item_1,
+                    cursor,
+                    new String[] {"name"},
+                    new int[] {android.R.id.text1});
+            mPoiList.setAdapter(adapter);
         } // end method onPostExecute()
-
-
     } // end private class GetPlaces
 
     private void initCompo() {

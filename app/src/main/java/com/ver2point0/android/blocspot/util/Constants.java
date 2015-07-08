@@ -11,6 +11,17 @@ public class Constants {
 
     public static final String API_KEY = "AIzaSyBAUmIqphWvpc_YppTWRAfnCR_bno27ny4";
 
+    public static final String DATABASE_NAME = "GoPlaces";
+    public static final int DATABASE_VERSION = 1;
+
+    public static final String TABLE_POI_NAME = "poiTable";
+    public static final String TABLE_COLUMN_ID = "_id";
+    public static final String TABLE_COLUMN_POI_NAME = "name";
+    public static final String TABLE_COLUMN_LATITUDE = "lat";
+    public static final String TABLE_COLUMN_LONGITUDE = "lng";
+    public static final String TABLE_COLUMN_CAT_NAME = "catName";
+    public static final String TABLE_COLUMN_CAT_COLOR = "catColor";
+
     public static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/search/json?";
     public static final String ALL_PLACE_TYPES = "&types=airport|amusement_park|aquarium|" +
             "art_gallery|atm|bakery|bank|bar|beauty_salon|bicycle_store|book_store|bowling_alley|" +
