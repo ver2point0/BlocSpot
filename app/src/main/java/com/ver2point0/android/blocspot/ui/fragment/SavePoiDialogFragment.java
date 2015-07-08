@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.gson.Gson;
@@ -38,6 +39,7 @@ public class SavePoiDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override
@@ -49,11 +51,23 @@ public class SavePoiDialogFragment extends DialogFragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Constants.MAIN_PREFS, 0);
         String json = sharedPreferences.getString(Constants.CATEGORY_ARRAY, null);
         Type type = new TypeToken<ArrayList<Category>>(){}.getType();
-        ArrayList<Category> categories = new Gson().fromJson(json, type);
+        final ArrayList<Category> categories = new Gson().fromJson(json, type);
 
         mListView = (ListView) rootView.findViewById(R.id.lv_category_list);
         SavePoiListAdapter adapter = new SavePoiListAdapter(mContext, categories);
+        mListView.setChoiceMode(mListView.CHOICE_MODE_SINGLE);
         mListView.setAdapter(adapter);
+
+        Button categoryButton = (Button) rootView.findViewById(R.id.bt_add);
+        categoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CreateCategoryDialogFragment dialogFragment =
+                        new CreateCategoryDialogFragment(mPlace, categories, mContext);
+                dialogFragment.show(getFragmentManager(), "dialog");
+                dismiss();
+            }
+        });
 
         return rootView;
     }

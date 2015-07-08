@@ -51,6 +51,22 @@ public class SavePoiListAdapter extends ArrayAdapter<Category> {
 
         if (color.equals(Constants.CYAN)) {
             background.setBackgroundColor(mContext.getResources().getColor(R.color.cyan));
+        } else if(color.equals(Constants.BLUE)) {
+            background.setBackgroundColor(mContext.getResources().getColor(R.color.blue));
+        } else if(color.equals(Constants.GREEN)) {
+            background.setBackgroundColor(mContext.getResources().getColor(R.color.green));
+        } else if(color.equals(Constants.MAGENTA)) {
+            background.setBackgroundColor(mContext.getResources().getColor(R.color.magenta));
+        } else if(color.equals(Constants.ORANGE)) {
+            background.setBackgroundColor(mContext.getResources().getColor(R.color.orange));
+        } else if(color.equals(Constants.RED)) {
+            background.setBackgroundColor(mContext.getResources().getColor(R.color.red));
+        } else if(color.equals(Constants.ROSE)) {
+            background.setBackgroundColor(mContext.getResources().getColor(R.color.rose));
+        } else if(color.equals(Constants.VIOLET)) {
+            background.setBackgroundColor(mContext.getResources().getColor(R.color.violet));
+        } else if(color.equals(Constants.YELLOW)) {
+            background.setBackgroundColor(mContext.getResources().getColor(R.color.yellow));
         }
     }
 

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ver2point0.android.blocspot.ui.fragment.CreateCategoryDialogFragment">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_weight="0.5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_vertical_padding">
+
+            <TextView
+                android:id="@+id/tv_color_title"
+                android:text="@string/title_choose_color"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/adapter_mini_margin"/>
+
+            <RadioGroup
+                android:id="@+id/rg_color_select"
+                android:layout_below="@id/tv_color_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:id="@+id/rb_blue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:background="@color/blue"/>
+
+                <RadioButton
+                    android:id="@+id/rb_green"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:background="@color/green"/>
+
+                <RadioButton
+                    android:id="@+id/rb_magenta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:background="@color/magenta"/>
+
+                <RadioButton
+                    android:id="@+id/rb_orange"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:background="@color/orange"/>
+
+                <RadioButton
+                    android:id="@+id/rb_red"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:background="@color/red"/>
+
+                <RadioButton
+                    android:id="@+id/rb_rose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:background="@color/rose"/>
+
+                <RadioButton
+                    android:id="@+id/rb_violet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:background="@color/violet"/>
+
+                <RadioButton
+                    android:id="@+id/rb_yellow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:background="@color/yellow"/>
+            </RadioGroup>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="0.5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_vertical_padding">
+
+            <TextView
+                android:id="@+id/tv_name_title"
+                android:text="@string/title_category_name"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/adapter_mini_margin" />
+
+            <EditText
+                android:id="@+id/et_new_category_name"
+                android:layout_below="@+id/tv_name_title"
+                android:inputType="text"
+                android:hint="New Category Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_big_margin"/>
+
+            <Button
+                android:id="@+id/bt_add_category"
+                android:text="@string/button_create_category"
+                android:layout_below="@id/et_new_category_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/bt_cancel_category"
+                android:text="@string/button_cancel"
+                android:layout_below="@id/bt_add_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

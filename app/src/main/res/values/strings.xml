@@ -11,6 +11,13 @@
     <string name="button_cancel">Cancel</string>
     <string name="button_save_poi">Save POI</string>
     <string name="title_save_poi_dialog">Choose category</string>
+    <string name="button_add_category">Add Category</string>
+    <string name="title_choose_color">Category Color</string>
+    <string name="title_category_name">Category Name</string>
+    <string name="title_create_category">Create Category</string>
+    <string name="button_create_category">Create Category</string>
+    <string name="toast_select_color">Select a color</string>
+    <string name="toast_no_category">Category Name is Empty</string>
 
     <string name="empty_poi_list">You have not selected any Points of Interest!
         \nClick the search button above to begin.</string>
