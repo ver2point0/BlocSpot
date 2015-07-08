@@ -8,7 +8,7 @@
     tools:context="com.ver2point0.android.blocspot.adapter.PlacesSearchItemAdapter">
 
     <RelativeLayout
-        android:background="@color/primary_light"
+        android:background="@android:color/white"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

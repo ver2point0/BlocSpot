@@ -93,13 +93,12 @@ public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCall
             mPoiList.setVisibility(View.INVISIBLE);
         }
 
-        @Override
-        public void onMapReady(GoogleMap googleMap) {}
-
-
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_blocspot);
 //        setSupportActionBar(toolbar);
-    } // end method onCreate()
+    } // end method onCreate
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {}
 
     private class GetPlaces extends AsyncTask<Void, Void, ArrayList<Place>> {
 

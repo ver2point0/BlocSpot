@@ -2,10 +2,12 @@ package com.ver2point0.android.blocspot.adapter;
 
 
 import android.content.Context;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.ver2point0.android.blocspot.R;
@@ -16,15 +18,17 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 
-public class PlacesSearchItemAdapter extends ArrayAdapter<Place> {
+public class PlacesSearchItemAdapter extends ArrayAdapter<Place> implements Filterable {
 
     private Context mContext;
     private ArrayList<Place> mPlaceList;
+    private Location mLocation;
 
-    public PlacesSearchItemAdapter(Context context, ArrayList<Place> places) {
+    public PlacesSearchItemAdapter(Context context, ArrayList<Place> places, Location location) {
         super(context, R.layout.adapter_places_search_item, places);
         mContext = context;
         mPlaceList = places;
+        mLocation = location;
     }
 
     @Override
@@ -50,15 +54,21 @@ public class PlacesSearchItemAdapter extends ArrayAdapter<Place> {
             e.printStackTrace();
         }
 
+        Location placeLocation = new Location("");
+        placeLocation.setLatitude(mPlaceList.get(position).getLatitude());
+        placeLocation.setLongitude(mPlaceList.get(position).getLongitude());
+        float distance = (float) (mLocation.distanceTo(placeLocation) / 1609.34);
+
         String typeCap = capitalizeString(type);
 
         holder.nameLabel.setText(mPlaceList.get(position).getName());
         holder.typeLabel.setText(typeCap);
+        holder.distanceLabel.setText(String.format("%.2f", distance) + " mi");
 
         return convertView;
     }
 
-    public static String capitalizeString(String string) {
+    private static String capitalizeString(String string) {
         char[] chars = string.toLowerCase().toCharArray();
         boolean found = false;
         for (int i = 0; i < chars.length; i++) {

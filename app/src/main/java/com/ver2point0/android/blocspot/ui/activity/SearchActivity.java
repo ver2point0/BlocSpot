@@ -14,8 +14,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.ver2point0.android.blocspot.R;
 import com.ver2point0.android.blocspot.adapter.PlacesSearchItemAdapter;
@@ -34,6 +37,7 @@ public class SearchActivity extends Activity {
     private String[] mPlaces;
     private ListView mSearchList;
     private String mQuery;
+    PlacesSearchItemAdapter mAdapter;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -62,6 +66,13 @@ public class SearchActivity extends Activity {
             new GetPlaces(SearchActivity.this,
                     mQuery.toLowerCase().replace("-", "_").replace(" ", "_")).execute();
         }
+
+        mSearchList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Toast.makeText(SearchActivity.this, String.valueOf(position), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
@@ -72,6 +83,7 @@ public class SearchActivity extends Activity {
         SearchView searchView = (SearchView) menu.findItem(R.id.lv_searchList).getActionView();
         searchView.setIconifiedByDefault(false);
         searchView.setFocusable(true);
+        searchView.setSubmitButtonEnabled(true);
         searchView.requestFocusFromTouch();
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -146,11 +158,6 @@ public class SearchActivity extends Activity {
                     Constants.API_KEY);
             ArrayList<Place> findPlaces = service.findPlaces(mLocation.getLatitude(),
                     mLocation.getLongitude(), searchText);
-
-            for (int i = 0; i < findPlaces.size(); i++) {
-                Place placeDetail = findPlaces.get(i);
-                Log.e(TAG, "places : " + placeDetail.getName());
-            }
             return findPlaces;
         }
 
@@ -167,8 +174,9 @@ public class SearchActivity extends Activity {
                 resultName.add(i, result.get(i).getName());
             }
 
-            PlacesSearchItemAdapter adapter = new PlacesSearchItemAdapter(context, result);
-            mSearchList.setAdapter(adapter);
+            mAdapter = new PlacesSearchItemAdapter(context, result, mLocation);
+            mSearchList.setTextFilterEnabled(true);
+            mSearchList.setAdapter(mAdapter);
         }
 
     } // end method GetPlaces()
