@@ -1,11 +1,14 @@
 package com.ver2point0.android.blocspot.adapter;
 
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Checkable;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -15,7 +18,7 @@ import com.ver2point0.android.blocspot.util.Constants;
 
 import java.util.ArrayList;
 
-public class SavePoiListAdapter extends ArrayAdapter<Category> {
+public class SavePoiListAdapter extends ArrayAdapter<Category> implements Checkable {
 
     private ArrayList<Category> mCategories;
     private Context mContext;
@@ -26,10 +29,13 @@ public class SavePoiListAdapter extends ArrayAdapter<Category> {
         mCategories = categories;
     }
 
+    public Category getItem(int position) {
+        return mCategories.get(position);
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-
+    ViewHolder holder;
         if (convertView == null) {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_save_poi, null);
             holder = new ViewHolder();
@@ -37,38 +43,54 @@ public class SavePoiListAdapter extends ArrayAdapter<Category> {
             holder.background = (RelativeLayout) convertView.findViewById(R.id.layoutBackground);
             convertView.setTag(holder);
         } else {
-            holder = (ViewHolder) convertView.getTag();
+           holder = (ViewHolder) convertView.getTag();
         }
 
         holder.categoryText.setText(mCategories.get(position).getName());
-        setColor(position, mCategories, holder.background);
+        setColor(position, holder.background);
 
         return convertView;
     }
 
-    private void setColor(int position, ArrayList<Category> categories, RelativeLayout background) {
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void setColor(int position, RelativeLayout background) {
         String color = mCategories.get(position).getColor();
 
         if (color.equals(Constants.CYAN)) {
-            background.setBackgroundColor(mContext.getResources().getColor(R.color.cyan));
+            background.setBackground(mContext.getResources().getDrawable(R.drawable.clicked_cyan));
         } else if(color.equals(Constants.BLUE)) {
-            background.setBackgroundColor(mContext.getResources().getColor(R.color.blue));
+            background.setBackground(mContext.getResources().getDrawable(R.drawable.clicked_blue));
         } else if(color.equals(Constants.GREEN)) {
-            background.setBackgroundColor(mContext.getResources().getColor(R.color.green));
+            background.setBackground(mContext.getResources().getDrawable(R.drawable.clicked_green));
         } else if(color.equals(Constants.MAGENTA)) {
-            background.setBackgroundColor(mContext.getResources().getColor(R.color.magenta));
+            background.setBackground(mContext.getResources().getDrawable(R.drawable.clicked_magenta));
         } else if(color.equals(Constants.ORANGE)) {
-            background.setBackgroundColor(mContext.getResources().getColor(R.color.orange));
+            background.setBackground(mContext.getResources().getDrawable(R.drawable.clicked_orange));
         } else if(color.equals(Constants.RED)) {
-            background.setBackgroundColor(mContext.getResources().getColor(R.color.red));
+            background.setBackground(mContext.getResources().getDrawable(R.drawable.clicked_red));
         } else if(color.equals(Constants.ROSE)) {
-            background.setBackgroundColor(mContext.getResources().getColor(R.color.rose));
+            background.setBackground(mContext.getResources().getDrawable(R.drawable.clicked_rose));
         } else if(color.equals(Constants.VIOLET)) {
-            background.setBackgroundColor(mContext.getResources().getColor(R.color.violet));
+            background.setBackground(mContext.getResources().getDrawable(R.drawable.clicked_violet));
         } else if(color.equals(Constants.YELLOW)) {
-            background.setBackgroundColor(mContext.getResources().getColor(R.color.yellow));
+            background.setBackground(mContext.getResources().getDrawable(R.drawable.clicked_yellow));
         }
     }
+
+    @Override
+    public void setChecked(boolean b) {
+    }
+
+    @Override
+    public boolean isChecked() {
+        return false;
+    }
+
+    @Override
+    public void toggle() {
+
+    }
+
 
     private static class ViewHolder {
         TextView categoryText;

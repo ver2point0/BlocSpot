@@ -4,10 +4,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_haha"
+        android:id="@+id/action_switch"
+        android:icon="@drawable/ic_action_list"
         android:orderInCategory="100"
         app:showAsAction="always"
-        android:title="TEST STRING"
-        />
+        android:title="View List"/>
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_menu_search"
+        android:orderInCategory="200"
+        app:showAsAction="always"
+        android:title="Search"/>
+
+    <item
+        android:id="@+id/action_filter"
+        android:icon="@drawable/ic_action_filter"
+        android:orderInCategory="300"
+        app:showAsAction="always"
+        android:title="Filter"/>
+
 
 </menu>

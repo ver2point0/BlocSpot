@@ -25,16 +25,16 @@ import com.ver2point0.android.blocspot.places.Place;
 import com.ver2point0.android.blocspot.places.PlacesService;
 import com.ver2point0.android.blocspot.ui.fragment.SavePoiDialogFragment;
 import com.ver2point0.android.blocspot.util.Constants;
+import com.ver2point0.android.blocspot.util.Utils;
 
 import java.util.ArrayList;
 
-public class SearchActivity extends FragmentActivity {
+public class SearchActivity extends FragmentActivity implements SavePoiDialogFragment.OnSavePoiInteractionListener {
 
     private final String TAG = getClass().getSimpleName();
 
     private LocationManager mLocationManager;
     private Location mLocation;
-    private String[] mPlaces;
     private ListView mSearchList;
     private String mQuery;
     PlacesSearchItemAdapter mAdapter;
@@ -54,11 +54,12 @@ public class SearchActivity extends FragmentActivity {
             mQuery = savedInstanceState.getString(Constants.QUERY_TEXT);
         }
 
+        Utils.setContext(this);
+
         if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
             mQuery = getIntent().getStringExtra(SearchManager.QUERY);
         }
-
-        mPlaces = getResources().getStringArray(R.array.places);
+        ;
         currentLocation();
         mSearchList = (ListView) findViewById(R.id.lv_searchList);
 
@@ -72,9 +73,15 @@ public class SearchActivity extends FragmentActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Place place = (Place) adapterView.getItemAtPosition(position);
                 SavePoiDialogFragment savePoiDialogFragment = new SavePoiDialogFragment(SearchActivity.this, place);
-                savePoiDialogFragment.show(getSupportFragmentManager(), "dialog");
+                savePoiDialogFragment.show(getFragmentManager(), "dialog");
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Utils.setContext(null);
     }
 
     @Override
@@ -132,6 +139,12 @@ public class SearchActivity extends FragmentActivity {
             mLocationManager.removeUpdates(listener);
         }
     };
+
+    @Override
+    public void returnToMain() {
+        Intent intent = new Intent(this, BlocSpotActivity.class);
+        startActivity(intent);
+    }
 
     private class GetPlaces extends AsyncTask<Void, Void, ArrayList<Place>> {
 

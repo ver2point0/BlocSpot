@@ -4,11 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ver2point0.android.blocspot.ui.fragment.SavePoiDialogFragment">
+    tools:context="com.ver2point0.android.blocspot.ui.fragment.FilterDialogFragment">
 
     <ListView
         android:id="@+id/lv_category_list"
-        android:background="@drawable/clicked_blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -16,41 +15,31 @@
         android:layout_alignParentStart="true"
         android:layout_marginBottom="@dimen/activity_vertical_margin"/>
 
-    <Button
-        android:id="@+id/bt_add"
-        android:layout_below="@id/lv_category_list"
-        style="?android:attr/buttonStyleSmall"
-        android:text="@string/button_add_category"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"/>
-
     <LinearLayout
         android:id="@+id/ll_buttons"
         android:background="@android:color/white"
-        android:layout_below="@+id/bt_add"
+        android:layout_below="@+id/lv_category_list"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/bt_save"
-            android:text="@string/button_save_poi"
+            android:id="@+id/bt_filter"
+            android:text="@string/button_filter"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/editText"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"/>
 
         <Button
-            android:id="@+id/bt_cancel"
-            android:text="@string/button_cancel"
+            android:id="@+id/bt_reset"
+            android:text="@string/button_reset_filter"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/editText"
             android:layout_alignRight="@+id/editText"
             android:layout_alignEnd="@+id/editText"/>
     </LinearLayout>
+
 </RelativeLayout>
