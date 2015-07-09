@@ -136,13 +136,12 @@ public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCall
     @Override
     public void onMapReady(GoogleMap googleMap) {}
 
-    private class GetPlaces extends AsyncTask<Void, Void, ArrayList<Place>> {
+    private class GetPlaces extends AsyncTask<Void, Void, Cursor> {
 
         private ProgressDialog dialog;
         private Context context;
         private String places;
         private Exception ex;
-        private Cursor mCursor;
 
         public GetPlaces(Context context, String places) {
             this.context = context;
@@ -165,26 +164,25 @@ public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCall
         } // end method onPreExecute()
 
         @Override
-        protected ArrayList<Place> doInBackground(Void... arg0) {
+        protected Cursor doInBackground(Void... arg0) {
             ArrayList<Place> places = new ArrayList<Place>();
+            Cursor cursor = null;
             try {
-                mCursor = mPoiTable.poiQuery();
+                cursor = mPoiTable.poiQuery();
             } catch (Exception e) {
                 ex = e;
                 Log.e("ERROR_DO", String.valueOf(ex));
             }
-            return places;
+            return cursor;
         } // end method doInBackground()
 
         @Override
-        protected void onPostExecute(ArrayList<Place> places) {
-            super.onPostExecute(places);
+        protected void onPostExecute(Cursor cursor) {
+            super.onPostExecute(cursor);
             if (ex != null) {
                 Log.e("ERROR_POST", String.valueOf(ex));
                 dialog.dismiss();
             }
-
-            PoiListAdapter adapter = new PoiListAdapter(BlocSpotActivity.this, mCursor, mLocation);
 
             if (dialog.isShowing()) {
                 try {
@@ -194,14 +192,17 @@ public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCall
                 }
             }
 
-            Cursor cursor;
-            for (int i = 0; i < mPoiList.getCount(); i++) {
-                cursor = ((Cursor) adapter.getItem(i));
+            PoiListAdapter adapter = new PoiListAdapter(BlocSpotActivity.this, cursor, mLocation);
+            mPoiList.setAdapter(adapter);
+
+            Cursor c;
+            for (int i = 0; i < cursor.getCount(); i++) {
+                c = ((Cursor) adapter.getItem(i));
                 mGoogleMap.addMarker(new MarkerOptions()
                         .title(cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_POI_NAME)))
                         .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE)),
                                 cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE))))
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin)));
+                        .icon(BitmapDescriptorFactory.defaultMarker(getMarkerColor(c))));
             }
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()))
@@ -211,6 +212,31 @@ public class BlocSpotActivity extends FragmentActivity implements OnMapReadyCall
             mGoogleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
         } // end method onPostExecute()
+
+        private float getMarkerColor(Cursor c) {
+            float colorId = 0;
+            String color = c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_CAT_COLOR));
+            if(color.equals(Constants.CYAN)) {
+                colorId = BitmapDescriptorFactory.HUE_CYAN;
+            } else if(color.equals(Constants.BLUE)) {
+                colorId = BitmapDescriptorFactory.HUE_BLUE;
+            } else if(color.equals(Constants.GREEN)) {
+                colorId = BitmapDescriptorFactory.HUE_GREEN;
+            } else if(color.equals(Constants.MAGENTA)) {
+                colorId = BitmapDescriptorFactory.HUE_MAGENTA;
+            } else if(color.equals(Constants.ORANGE)) {
+                colorId = BitmapDescriptorFactory.HUE_ORANGE;
+            } else if(color.equals(Constants.RED)) {
+                colorId = BitmapDescriptorFactory.HUE_RED;
+            } else if(color.equals(Constants.ROSE)) {
+                colorId = BitmapDescriptorFactory.HUE_ROSE;
+            } else if(color.equals(Constants.VIOLET)) {
+                colorId = BitmapDescriptorFactory.HUE_VIOLET;
+            } else if(color.equals(Constants.YELLOW)) {
+                colorId = BitmapDescriptorFactory.HUE_YELLOW;
+            }
+            return colorId;
+        }
     } // end private class GetPlaces
 
     private void initCompo() {
