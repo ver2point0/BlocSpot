@@ -17,6 +17,8 @@ public class PoiTable extends Table {
                     Constants.TABLE_COLUMN_LONGITUDE + " DOUBLE," +
                     Constants.TABLE_COLUMN_CAT_NAME + " TEXT," +
                     Constants.TABLE_COLUMN_CAT_COLOR + " TEXT," +
+                    "UNIQUE(" + Constants.TABLE_COLUMN_POI_NAME +
+                    ") ON CONFLICT REPLACE"+
                     " )";
     
     public PoiTable() {
@@ -41,9 +43,18 @@ public class PoiTable extends Table {
         mDatabase.insert(Constants.TABLE_POI_NAME, null, values);
     }
 
-    public Cursor notesQuery() {
+    public Cursor poiQuery() {
         return mDatabase.query(Constants.TABLE_POI_NAME,
                 new String[]{Constants.TABLE_COLUMN_ID, Constants.TABLE_COLUMN_POI_NAME},
                 null, null, null, null, null, null);
+    }
+
+    public Cursor poiCheck(String name) {
+        return mDatabase.query(Constants.TABLE_POI_NAME,
+                new String[]{Constants.TABLE_COLUMN_ID, Constants.TABLE_COLUMN_POI_NAME,
+                Constants.TABLE_COLUMN_CAT_COLOR},
+                Constants.TABLE_COLUMN_POI_NAME + " = ?",
+                new String[]{name},
+                null, null, null, null);
     }
 }

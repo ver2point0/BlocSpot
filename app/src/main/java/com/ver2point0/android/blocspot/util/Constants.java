@@ -12,7 +12,7 @@ public class Constants {
     public static final String API_KEY = "AIzaSyBAUmIqphWvpc_YppTWRAfnCR_bno27ny4";
 
     public static final String DATABASE_NAME = "GoPlaces";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 5;
 
     public static final String TABLE_POI_NAME = "poiTable";
     public static final String TABLE_COLUMN_ID = "_id";

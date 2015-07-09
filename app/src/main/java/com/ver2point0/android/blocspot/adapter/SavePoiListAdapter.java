@@ -22,14 +22,11 @@ public class SavePoiListAdapter extends ArrayAdapter<Category> implements Checka
 
     private ArrayList<Category> mCategories;
     private Context mContext;
-    private ArrayList<Boolean> mItemChecked;
-    private ViewHolder mViewHolder;
 
     public SavePoiListAdapter(Context context, ArrayList<Category> categories) {
         super(context, R.layout.adapter_save_poi, categories);
         mContext = context;
         mCategories = categories;
-        mItemChecked = new ArrayList<Boolean>();
     }
 
     public Category getItem(int position) {
@@ -38,25 +35,25 @@ public class SavePoiListAdapter extends ArrayAdapter<Category> implements Checka
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
+    ViewHolder holder;
         if (convertView == null) {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_save_poi, null);
-            mViewHolder = new ViewHolder();
-            mViewHolder.categoryText = (TextView) convertView.findViewById(R.id.tv_category_text);
-            mViewHolder.background = (RelativeLayout) convertView.findViewById(R.id.layoutBackground);
-            convertView.setTag(mViewHolder);
+            holder = new ViewHolder();
+            holder.categoryText = (TextView) convertView.findViewById(R.id.tv_category_text);
+            holder.background = (RelativeLayout) convertView.findViewById(R.id.layoutBackground);
+            convertView.setTag(holder);
         } else {
-           mViewHolder = (ViewHolder) convertView.getTag();
+           holder = (ViewHolder) convertView.getTag();
         }
 
-        mViewHolder.categoryText.setText(mCategories.get(position).getName());
-        setColor(position, mCategories, mViewHolder.background);
+        holder.categoryText.setText(mCategories.get(position).getName());
+        setColor(position, holder.background);
 
         return convertView;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void setColor(int position, ArrayList<Category> categories, RelativeLayout background) {
+    private void setColor(int position, RelativeLayout background) {
         String color = mCategories.get(position).getColor();
 
         if (color.equals(Constants.CYAN)) {

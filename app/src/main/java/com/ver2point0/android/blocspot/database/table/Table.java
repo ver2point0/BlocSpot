@@ -7,7 +7,6 @@ import com.ver2point0.android.blocspot.BlocSpotApplication;
 
 public abstract class Table {
 
-    protected boolean mLoaded = false;
     private String TABLE_NAME;
     SQLiteDatabase mDatabase;
 
@@ -21,9 +20,6 @@ public abstract class Table {
     }
 
     public final void load() {
-        if (isLoaded()) {
-            return;
-        }
         new Thread() {
             @Override
             public void run() {
@@ -31,15 +27,6 @@ public abstract class Table {
                 mDatabase = BlocSpotApplication.get().getWritableDb();
             }
         }.start();
-        setLoaded(true);
-    }
-
-    protected  void setLoaded(boolean loaded) {
-        mLoaded = loaded;
-    }
-
-    public boolean isLoaded() {
-        return mLoaded;
     }
 
     public abstract String getCreateStatement();

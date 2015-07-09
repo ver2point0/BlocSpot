@@ -28,7 +28,7 @@ import com.ver2point0.android.blocspot.util.Constants;
 
 import java.util.ArrayList;
 
-public class SearchActivity extends FragmentActivity {
+public class SearchActivity extends FragmentActivity implements SavePoiDialogFragment.OnSavePoiInteractionListener {
 
     private final String TAG = getClass().getSimpleName();
 
@@ -132,6 +132,12 @@ public class SearchActivity extends FragmentActivity {
             mLocationManager.removeUpdates(listener);
         }
     };
+
+    @Override
+    public void returnToMain() {
+        Intent intent = new Intent(this, BlocSpotActivity.class);
+        startActivity(intent);
+    }
 
     private class GetPlaces extends AsyncTask<Void, Void, ArrayList<Place>> {
 
