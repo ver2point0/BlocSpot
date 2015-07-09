@@ -19,6 +19,9 @@
     <string name="toast_select_color">Select a color</string>
     <string name="toast_no_category">Category Name is Empty</string>
     <string name="toast_poi_saved">POI Saved!</string>
+    <string name="button_filter">Filter</string>
+    <string name="button_reset_filter">Reset Filters</string>
+    <string name="title_filter">Filter By Category</string>
 
     <string name="empty_poi_list">You have not selected any Points of Interest!
         \nClick the search button above to begin.</string>
