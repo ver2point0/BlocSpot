@@ -40,12 +40,17 @@ public class PoiTable extends Table {
         values.put(Constants.TABLE_COLUMN_LONGITUDE, lng);
         values.put(Constants.TABLE_COLUMN_CAT_NAME, catName);
         values.put(Constants.TABLE_COLUMN_CAT_COLOR, catColor);
+        values.put(Constants.TABLE_COLUMN_NOTE, "");
+        values.put(Constants.TABLE_COLUMN_VISITED, false);
         mDatabase.insert(Constants.TABLE_POI_NAME, null, values);
     }
 
     public Cursor poiQuery() {
         return mDatabase.query(Constants.TABLE_POI_NAME,
-                new String[]{Constants.TABLE_COLUMN_ID, Constants.TABLE_COLUMN_POI_NAME},
+                new String[]{Constants.TABLE_COLUMN_ID, Constants.TABLE_COLUMN_POI_NAME,
+                Constants.TABLE_COLUMN_NOTE, Constants.TABLE_COLUMN_VISITED,
+                Constants.TABLE_COLUMN_LATITUDE, Constants.TABLE_COLUMN_LONGITUDE,
+                Constants.TABLE_COLUMN_CAT_NAME, Constants.TABLE_COLUMN_CAT_COLOR},
                 null, null, null, null, null, null);
     }
 

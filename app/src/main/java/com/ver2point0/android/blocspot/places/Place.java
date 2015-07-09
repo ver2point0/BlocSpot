@@ -17,6 +17,11 @@ public class Place {
     private Double mLongitude;
     private JSONArray mTypes;
 
+//    public Place(String name, Double latitude, Double longitude) {
+//
+//    }
+
+
     public String getId() {
         return mId;
     }

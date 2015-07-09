@@ -10,5 +10,6 @@
     <dimen name="activity_vertical_padding">8dp</dimen>
     <dimen name="adapter_mini_margin">4dp</dimen>
     <dimen name="activity_vertical_big_margin">85dp</dimen>
+    <dimen name="color_area">5dp</dimen>
 
 </resources>

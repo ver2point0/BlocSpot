@@ -19,10 +19,6 @@ public class BlocSpotApplication extends Application {
         mDatabase = new BlocSpotDataBaseHelper(getApplicationContext());
     }
 
-    public SQLiteDatabase getReadableDb() {
-        return mDatabase.getReadableDatabase();
-    }
-
     public SQLiteDatabase getWritableDb() {
         return mDatabase.getWritableDatabase();
     }

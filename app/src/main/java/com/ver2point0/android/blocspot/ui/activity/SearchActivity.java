@@ -25,6 +25,7 @@ import com.ver2point0.android.blocspot.places.Place;
 import com.ver2point0.android.blocspot.places.PlacesService;
 import com.ver2point0.android.blocspot.ui.fragment.SavePoiDialogFragment;
 import com.ver2point0.android.blocspot.util.Constants;
+import com.ver2point0.android.blocspot.util.Utils;
 
 import java.util.ArrayList;
 
@@ -34,7 +35,6 @@ public class SearchActivity extends FragmentActivity implements SavePoiDialogFra
 
     private LocationManager mLocationManager;
     private Location mLocation;
-    private String[] mPlaces;
     private ListView mSearchList;
     private String mQuery;
     PlacesSearchItemAdapter mAdapter;
@@ -54,11 +54,12 @@ public class SearchActivity extends FragmentActivity implements SavePoiDialogFra
             mQuery = savedInstanceState.getString(Constants.QUERY_TEXT);
         }
 
+        Utils.setContext(this);
+
         if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
             mQuery = getIntent().getStringExtra(SearchManager.QUERY);
         }
-
-        mPlaces = getResources().getStringArray(R.array.places);
+        ;
         currentLocation();
         mSearchList = (ListView) findViewById(R.id.lv_searchList);
 
@@ -75,6 +76,12 @@ public class SearchActivity extends FragmentActivity implements SavePoiDialogFra
                 savePoiDialogFragment.show(getFragmentManager(), "dialog");
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Utils.setContext(null);
     }
 
     @Override
