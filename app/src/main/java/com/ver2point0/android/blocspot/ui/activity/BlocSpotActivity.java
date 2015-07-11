@@ -203,6 +203,18 @@ public class BlocSpotActivity extends FragmentActivity
                         .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE)),
                                 cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE))))
                         .icon(BitmapDescriptorFactory.defaultMarker(getMarkerColor(c))));
+                mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                    @Override
+                    public View getInfoWindow(Marker marker) {
+                        return null;
+                    }
+
+                    @Override
+                    public View getInfoContents(Marker marker) {
+                        View view = getLayoutInflater().inflate(R.layout.adapter_info_window, null);
+                        return view;
+                    }
+                });
             }
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()))
@@ -241,18 +253,6 @@ public class BlocSpotActivity extends FragmentActivity
 
     private void initCompo() {
         mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.f_map)).getMap();
-        mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-            @Override
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
-
-            @Override
-            public View getInfoContents(Marker marker) {
-                View view = getLayoutInflater().inflate(R.layout.adapter_info_window, null);
-                return view;
-            }
-        });
     }
 
     @Override
