@@ -1,18 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_lat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:id="@+id/ll_header"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_name_field"
+            android:layout_weight="0.9"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text=""/>
+
+        <ImageButton
+            android:id="@+id/ib_visited"
+            android:src="@drawable/ic_check_off"
+            android:background="@android:color/white"
+            android:layout_weight="0.1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/tv_lng"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:id="@+id/tv_note_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_below="@+id/ll_header"/>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_footer"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_note_field">
+
+        <TextView
+            android:id="@+id/tv_category_field"
+            android:layout_weight="0.45"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text=""/>
+
+        <ImageButton
+            android:id="@+id/ib_note"
+            android:layout_weight="0.15"
+            android:src="@drawable/ic_take_note"
+            android:background="@android:color/white"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+
+        <ImageButton
+            android:id="@+id/ib_share"
+            android:layout_weight="0.15"
+            android:src="@drawable/ic_share"
+            android:background="@android:color/white"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+
+        <ImageButton
+            android:id="@+id/ib_delete"
+            android:layout_weight="0.15"
+            android:src="@drawable/ic_trash"
+            android:background="@android:color/white"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+</RelativeLayout>

@@ -22,6 +22,11 @@
     <string name="button_filter">Filter</string>
     <string name="button_reset_filter">Reset Filters</string>
     <string name="title_filter">Filter By Category</string>
+    <string name="title_edit_note">Edit Note</string>
+    <string name="button_edit_note">Edit Note</string>
+    <string name="description_popup_menu">Popup Menu</string>
+    <string name="description_visited">Visited</string>
+    <string name="toast_poi_updated">POI Updated!</string>
 
     <string name="empty_poi_list">You have not selected any Points of Interest!
         \nClick the search button above to begin.</string>
