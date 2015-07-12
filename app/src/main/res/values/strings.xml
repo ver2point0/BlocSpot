@@ -27,6 +27,9 @@
     <string name="description_popup_menu">Popup Menu</string>
     <string name="description_visited">Visited</string>
     <string name="toast_poi_updated">POI Updated!</string>
+    <string name="popup_edit_note">Edit note</string>
+    <string name="popup_visited">Mark as Visited</string>
+    <string name="popup_category">Change Category</string>
 
     <string name="empty_poi_list">You have not selected any Points of Interest!
         \nClick the search button above to begin.</string>

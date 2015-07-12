@@ -16,7 +16,9 @@ public class BlocSpotApplication extends Application {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         mDatabase = new BlocSpotDataBaseHelper(getApplicationContext());
+        BlocSpotApplication.mContext = getApplicationContext();
     }
 
     public SQLiteDatabase getWritableDb() {
@@ -24,6 +26,9 @@ public class BlocSpotApplication extends Application {
     }
 
     public static BlocSpotApplication get() {
+        if (BlocSpotApplication.mContext == null) {
+
+        }
         return (BlocSpotApplication) BlocSpotApplication.mContext;
     }
 }

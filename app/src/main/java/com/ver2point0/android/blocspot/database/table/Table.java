@@ -24,7 +24,13 @@ public abstract class Table {
             @Override
             public void run() {
                 super.run();
-                mDatabase = BlocSpotApplication.get().getWritableDb();
+                if (BlocSpotApplication.get() == null) {
+                    while (BlocSpotApplication.get() == null) {
+                        mDatabase = BlocSpotApplication.get().getWritableDb();
+                    }
+                } else {
+                    mDatabase = BlocSpotApplication.get().getWritableDb();
+                }
             }
         }.start();
     }
