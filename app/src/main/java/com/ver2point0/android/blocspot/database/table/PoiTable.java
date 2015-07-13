@@ -91,4 +91,12 @@ public class PoiTable extends Table {
     public void deletePoi(String id) {
         mDatabase.delete(Constants.TABLE_POI_NAME, Constants.TABLE_COLUMN_ID + " = ?", new String[]{id});
     }
+
+    public void updateCategory(String id, String category, String catColor) {
+        ContentValues values = new ContentValues();
+        values.put(Constants.TABLE_COLUMN_CAT_NAME, category);
+        values.put(Constants.TABLE_COLUMN_CAT_COLOR, catColor);
+        mDatabase.update(Constants.TABLE_POI_NAME, values,
+                Constants.TABLE_COLUMN_ID + " = ?", new String[]{id});
+    }
 }

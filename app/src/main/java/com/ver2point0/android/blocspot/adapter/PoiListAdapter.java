@@ -33,6 +33,8 @@ public class PoiListAdapter extends CursorAdapter {
     private boolean mVisited;
     private String mLat;
     private String mLng;
+    private String mCatName;
+    private String mCatColor;
 
     public PoiListAdapter(Context context, Cursor cursor, Location location) {
         super(context, cursor);
@@ -57,6 +59,8 @@ public class PoiListAdapter extends CursorAdapter {
         holder.visited = (TextView) mView.findViewById(R.id.tv_id_visited_holder);
         holder.lat = (TextView) mView.findViewById(R.id.tv_lat_holder);
         holder.lng = (TextView) mView.findViewById(R.id.tv_lng_holder);
+        holder.catName = (TextView) mView.findViewById(R.id.tv_cat_name_holder);
+        holder.catColor = (TextView) mView.findViewById(R.id.tv_cat_color_holder);
         mView.setTag(holder);
         return mView;
     }
@@ -72,6 +76,7 @@ public class PoiListAdapter extends CursorAdapter {
         Double lat = cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE));
         Double lng = cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE));
         String color = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_CAT_COLOR));
+        String catName = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_CAT_NAME));
 
         holder.name.setText(name);
         if(note != null) {
@@ -80,6 +85,8 @@ public class PoiListAdapter extends CursorAdapter {
         holder.id.setText(id);
         holder.lat.setText(String.valueOf(lat));
         holder.lng.setText(String.valueOf(lng));
+        holder.catName.setText(catName);
+        holder.catColor.setText(color);
 
         Location placeLoc = new Location("");
         placeLoc.setLatitude(lat);
@@ -103,14 +110,16 @@ public class PoiListAdapter extends CursorAdapter {
         mPopupMenu.getMenu().add(Menu.NONE, 0, Menu.NONE, context.getString(R.string.popup_edit_note));
         mPopupMenu.getMenu().add(Menu.NONE, 1, Menu.NONE, context.getString(R.string.popup_visited));
         mPopupMenu.getMenu().add(Menu.NONE, 2, Menu.NONE, context.getString(R.string.popup_category));
-        mPopupMenu.getMenu().add(Menu.NONE, 3, Menu.NONE, "View on Map");
-        mPopupMenu.getMenu().add(Menu.NONE, 4, Menu.NONE, "Share POI");
-        mPopupMenu.getMenu().add(Menu.NONE, 5, Menu.NONE, "Delete POI");
+        mPopupMenu.getMenu().add(Menu.NONE, 3, Menu.NONE, context.getString(R.string.popup_view_map));
+        mPopupMenu.getMenu().add(Menu.NONE, 4, Menu.NONE, context.getString(R.string.popup_share));
+        mPopupMenu.getMenu().add(Menu.NONE, 5, Menu.NONE, context.getString(R.string.popup_delete));
 
         holder.threeDots.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mNote = holder.note.getText().toString();
+                mCatColor = holder.catColor.getText().toString();
+                mCatName = holder.catName.getText().toString();
                 mId = holder.id.getText().toString();
                 mLat = holder.lat.getText().toString();
                 mLng = holder.lng.getText().toString();
@@ -135,6 +144,7 @@ public class PoiListAdapter extends CursorAdapter {
                         ((BlocSpotActivity) mContext).editVisited(mId, !mVisited);
                         break;
                     case 2:
+                        ((BlocSpotActivity) mContext).changeCategory(mId, mCatName, mCatColor);
                         break;
                     case 3:
                         ((BlocSpotActivity) mContext).viewOnMap(mLat, mLng);
@@ -161,6 +171,8 @@ public class PoiListAdapter extends CursorAdapter {
         TextView visited;
         TextView lat;
         TextView lng;
+        TextView catName;
+        TextView catColor;
     }
 
     public interface OnPoiListAdapterListener {
@@ -168,5 +180,6 @@ public class PoiListAdapter extends CursorAdapter {
         public void editVisited(String id, Boolean visited);
         public void viewOnMap(String lat, String lng);
         public void deletePoi(String id);
+        public void changeCategory(String id, String category, String catColor);
     }
 }

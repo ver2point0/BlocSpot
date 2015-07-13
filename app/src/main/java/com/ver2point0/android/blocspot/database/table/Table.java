@@ -24,12 +24,12 @@ public abstract class Table {
             @Override
             public void run() {
                 super.run();
-                if (BlocSpotApplication.get() == null) {
+                try {
+                    mDatabase = BlocSpotApplication.get().getWritableDb();
+                } catch (NullPointerException e) {
                     while (BlocSpotApplication.get() == null) {
                         mDatabase = BlocSpotApplication.get().getWritableDb();
                     }
-                } else {
-                    mDatabase = BlocSpotApplication.get().getWritableDb();
                 }
             }
         }.start();
