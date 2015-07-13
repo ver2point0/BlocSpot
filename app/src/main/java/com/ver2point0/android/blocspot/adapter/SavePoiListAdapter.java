@@ -22,6 +22,8 @@ public class SavePoiListAdapter extends ArrayAdapter<Category> implements Checka
 
     private ArrayList<Category> mCategories;
     private Context mContext;
+    private String mCatName;
+    private int mPosition;
 
     public SavePoiListAdapter(Context context, ArrayList<Category> categories) {
         super(context, R.layout.adapter_save_poi, categories);

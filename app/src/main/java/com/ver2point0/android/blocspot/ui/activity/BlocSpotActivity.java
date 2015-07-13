@@ -48,7 +48,8 @@ import java.util.ArrayList;
 
 public class BlocSpotActivity extends FragmentActivity
         implements OnMapReadyCallback, FilterDialogFragment.OnFilterListener,
-        EditNoteFragment.OnNoteUpdateListener, PoiListAdapter.OnPoiListAdapterListener {
+        EditNoteFragment.OnNoteUpdateListener, PoiListAdapter.OnPoiListAdapterListener,
+        ChangeCategoryFragment.OnChangeCategoryListener {
 
     private final String TAG = getClass().getSimpleName();
     private GoogleMap mGoogleMap;
@@ -90,7 +91,7 @@ public class BlocSpotActivity extends FragmentActivity
 
         if (mListState) {
             getFragmentManager().beginTransaction().hide(mMapFragment).commit();
-        } else if (mListState) {
+        } else {
             mPoiList.setVisibility(View.INVISIBLE);
         }
 
@@ -220,9 +221,14 @@ public class BlocSpotActivity extends FragmentActivity
     }
 
     @Override
-    public void changeCategory(String id, String category, String catColor){
-        ChangeCategoryFragment dialog = new ChangeCategoryFragment(id, category, catColor, this);
+    public void changeCategory(String id){
+        ChangeCategoryFragment dialog = new ChangeCategoryFragment(id, this);
         dialog.show(getFragmentManager(), "dialog");
+    }
+
+    @Override
+    public void refreshList() {
+        new GetPlaces(BlocSpotActivity.this, mFilter).execute();
     }
 
     private class GetPlaces extends AsyncTask<Void, Void, Cursor> {
@@ -279,8 +285,8 @@ public class BlocSpotActivity extends FragmentActivity
             if (dialog.isShowing()) {
                 try {
                     dialog.dismiss();
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
+                } catch (IllegalArgumentException ignored) {
+                    ignored.printStackTrace();
                 }
             }
 

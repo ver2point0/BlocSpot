@@ -144,7 +144,7 @@ public class PoiListAdapter extends CursorAdapter {
                         ((BlocSpotActivity) mContext).editVisited(mId, !mVisited);
                         break;
                     case 2:
-                        ((BlocSpotActivity) mContext).changeCategory(mId, mCatName, mCatColor);
+                        ((BlocSpotActivity) mContext).changeCategory(mId);
                         break;
                     case 3:
                         ((BlocSpotActivity) mContext).viewOnMap(mLat, mLng);
@@ -180,6 +180,6 @@ public class PoiListAdapter extends CursorAdapter {
         public void editVisited(String id, Boolean visited);
         public void viewOnMap(String lat, String lng);
         public void deletePoi(String id);
-        public void changeCategory(String id, String category, String catColor);
+        public void changeCategory(String id);
     }
 }
