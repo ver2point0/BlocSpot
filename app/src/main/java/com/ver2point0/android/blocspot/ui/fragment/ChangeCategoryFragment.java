@@ -43,6 +43,7 @@ public class ChangeCategoryFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_pick_category_dialog, container, false);
         getDialog().setTitle(getString(R.string.title_save_poi_dialog));
+        getDialog().setCanceledOnTouchOutside(true);
 
         final Button savePoiButton = (Button) rootView.findViewById(R.id.bt_save);
         savePoiButton.setText(mContext.getString(R.string.button_change_category));
@@ -100,7 +101,7 @@ public class ChangeCategoryFragment extends DialogFragment {
                     }
                 }.start();
                 Toast.makeText(mContext, mContext.getString(R.string.toast_poi_updated), Toast.LENGTH_LONG).show();
-                ((BlocSpotActivity) mContext).refreshList();
+                ((BlocSpotActivity) mContext).refreshList(mId);
                 dismiss();
             }
         });
@@ -124,6 +125,6 @@ public class ChangeCategoryFragment extends DialogFragment {
     }
 
     public interface OnChangeCategoryListener{
-        public void refreshList();
+        public void refreshList(String id);
     }
 }

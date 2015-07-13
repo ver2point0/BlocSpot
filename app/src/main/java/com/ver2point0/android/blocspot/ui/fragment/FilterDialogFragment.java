@@ -46,6 +46,7 @@ public class FilterDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_filter_dialog, container, false);
         getDialog().setTitle(getString(R.string.title_filter));
+        getDialog().setCanceledOnTouchOutside(true);
 
         final Button filterButton = (Button) rootView.findViewById(R.id.bt_filter);
         if (mCategory == null) {
