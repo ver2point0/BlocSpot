@@ -23,8 +23,6 @@ import com.ver2point0.android.blocspot.util.Utils;
 public class PoiListAdapter extends CursorAdapter {
 
     private Context mContext;
-    private Cursor mCursor;
-    private View mView;
     private final LayoutInflater mInflater;
     private Location mLocation;
     private PopupMenu mPopupMenu;
@@ -33,36 +31,32 @@ public class PoiListAdapter extends CursorAdapter {
     private boolean mVisited;
     private String mLat;
     private String mLng;
-    private String mCatName;
-    private String mCatColor;
+    private String mName;
 
     public PoiListAdapter(Context context, Cursor cursor, Location location) {
         super(context, cursor);
         mContext = context;
-        mCursor = cursor;
         mInflater = LayoutInflater.from(context);
         mLocation = location;
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-        mView = mInflater.inflate(R.layout.adapter_poi_list, null);
+        View rootView = mInflater.inflate(R.layout.adapter_poi_list, null);
 
         ViewHolder holder = new ViewHolder();
-        holder.name = (TextView) mView.findViewById(R.id.tv_place_name);
-        holder.note = (TextView) mView.findViewById(R.id.tv_note_text);
-        holder.checkMark = (ImageView) mView.findViewById(R.id.iv_check_image);
-        holder.dist = (TextView) mView.findViewById(R.id.tv_place_dist);
-        holder.threeDots = (ImageButton) mView.findViewById(R.id.ib_three_dots);
-        holder.color = (TextView) mView.findViewById(R.id.tv_color_area);
-        holder.id = (TextView) mView.findViewById(R.id.tv_id_holder);
-        holder.visited = (TextView) mView.findViewById(R.id.tv_id_visited_holder);
-        holder.lat = (TextView) mView.findViewById(R.id.tv_lat_holder);
-        holder.lng = (TextView) mView.findViewById(R.id.tv_lng_holder);
-        holder.catName = (TextView) mView.findViewById(R.id.tv_cat_name_holder);
-        holder.catColor = (TextView) mView.findViewById(R.id.tv_cat_color_holder);
-        mView.setTag(holder);
-        return mView;
+        holder.name = (TextView) rootView.findViewById(R.id.tv_place_name);
+        holder.note = (TextView) rootView.findViewById(R.id.tv_note_text);
+        holder.checkMark = (ImageView) rootView.findViewById(R.id.iv_check_image);
+        holder.dist = (TextView) rootView.findViewById(R.id.tv_place_dist);
+        holder.threeDots = (ImageButton) rootView.findViewById(R.id.ib_three_dots);
+        holder.color = (TextView) rootView.findViewById(R.id.tv_color_area);
+        holder.id = (TextView) rootView.findViewById(R.id.tv_id_holder);
+        holder.visited = (TextView) rootView.findViewById(R.id.tv_id_visited_holder);
+        holder.lat = (TextView) rootView.findViewById(R.id.tv_lat_holder);
+        holder.lng = (TextView) rootView.findViewById(R.id.tv_lng_holder);
+        rootView.setTag(holder);
+        return rootView;
     }
 
     @Override
@@ -76,7 +70,6 @@ public class PoiListAdapter extends CursorAdapter {
         Double lat = cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE));
         Double lng = cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE));
         String color = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_CAT_COLOR));
-        String catName = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_CAT_NAME));
 
         holder.name.setText(name);
         if(note != null) {
@@ -85,8 +78,6 @@ public class PoiListAdapter extends CursorAdapter {
         holder.id.setText(id);
         holder.lat.setText(String.valueOf(lat));
         holder.lng.setText(String.valueOf(lng));
-        holder.catName.setText(catName);
-        holder.catColor.setText(color);
 
         Location placeLoc = new Location("");
         placeLoc.setLatitude(lat);
@@ -94,10 +85,10 @@ public class PoiListAdapter extends CursorAdapter {
         float dist = (float) (mLocation.distanceTo(placeLoc) / 1609.34);
         holder.dist.setText(String.format("%.2f", dist) + " mi");
 
-        if(visited != null && visited == true) {
+        if(visited != null && visited) {
             holder.checkMark.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_on));
             holder.visited.setText(Constants.TRUE);
-        } else if (visited != null && visited == false) {
+        } else if (visited != null && !visited) {
             holder.checkMark.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_off));
             holder.visited.setText(Constants.FALSE);
         }
@@ -117,9 +108,8 @@ public class PoiListAdapter extends CursorAdapter {
         holder.threeDots.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mName = holder.name.getText().toString();
                 mNote = holder.note.getText().toString();
-                mCatColor = holder.catColor.getText().toString();
-                mCatName = holder.catName.getText().toString();
                 mId = holder.id.getText().toString();
                 mLat = holder.lat.getText().toString();
                 mLng = holder.lng.getText().toString();
@@ -150,6 +140,7 @@ public class PoiListAdapter extends CursorAdapter {
                         ((BlocSpotActivity) mContext).viewOnMap(mLat, mLng);
                         break;
                     case 4:
+                        ((BlocSpotActivity) mContext).shareLocation(mName, mLat, mLng);
                         break;
                     case 5:
                         ((BlocSpotActivity) mContext).deletePoi(mId);
@@ -171,8 +162,6 @@ public class PoiListAdapter extends CursorAdapter {
         TextView visited;
         TextView lat;
         TextView lng;
-        TextView catName;
-        TextView catColor;
     }
 
     public interface OnPoiListAdapterListener {
@@ -181,5 +170,6 @@ public class PoiListAdapter extends CursorAdapter {
         public void viewOnMap(String lat, String lng);
         public void deletePoi(String id);
         public void changeCategory(String id);
+        public void shareLocation(String name, String lat, String lng);
     }
 }

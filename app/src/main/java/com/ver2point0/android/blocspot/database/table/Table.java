@@ -24,12 +24,16 @@ public abstract class Table {
             @Override
             public void run() {
                 super.run();
-                try {
-                    mDatabase = BlocSpotApplication.get().getWritableDb();
-                } catch (NullPointerException e) {
+                if (BlocSpotApplication.get() == null) {
                     while (BlocSpotApplication.get() == null) {
-                        mDatabase = BlocSpotApplication.get().getWritableDb();
+                        try {
+                            mDatabase = BlocSpotApplication.get().getWritableDb();
+                        } catch (NullPointerException ignored) {
+                           ignored.printStackTrace();
+                        }
                     }
+                } else {
+                    mDatabase = BlocSpotApplication.get().getWritableDb();
                 }
             }
         }.start();
@@ -37,5 +41,4 @@ public abstract class Table {
 
     public abstract String getCreateStatement();
 
-    public abstract void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion);
 }
