@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.ver2point0.android.blocspot.R;
 import com.ver2point0.android.blocspot.database.table.PoiTable;
+import com.ver2point0.android.blocspot.ui.activity.BlocSpotActivity;
 import com.ver2point0.android.blocspot.util.Constants;
 import com.ver2point0.android.blocspot.util.Utils;
 
@@ -28,6 +29,11 @@ public class InfoWindowFragment extends DialogFragment {
     private TextView mNoteField;
     private ImageButton mVisitedButton;
     private TextView mCatField;
+    private Boolean mVisited;
+    private String mName;
+    private String mLat;
+    private String mLng;
+    private String mNote;
 
     public InfoWindowFragment() {
         // Required empty public constructor
@@ -48,15 +54,59 @@ public class InfoWindowFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
        View rootView = inflater.inflate(R.layout.fragment_info_window, container, false);
        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getDialog().setCanceledOnTouchOutside(true);
 
        mNameField = (TextView) rootView.findViewById(R.id.tv_name_field);
        mNoteField = (TextView) rootView.findViewById(R.id.tv_note_field);
        mVisitedButton = (ImageButton) rootView.findViewById(R.id.ib_visited);
        mCatField = (TextView) rootView.findViewById(R.id.tv_category_field);
 
-       new GetPlaceInfo(mContext, mId).execute();
+       new GetPlaceInfo(mId).execute();
+
+       mVisitedButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               ((BlocSpotActivity) mContext).editVisited(mId, !mVisited);
+           }
+       });
+
+        ImageButton deletePoiButton = (ImageButton) rootView.findViewById(R.id.ib_delete);
+        deletePoiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BlocSpotActivity) mContext).deletePoi(mId);
+            }
+        });
+
+        ImageButton sharePoiButton = (ImageButton) rootView.findViewById(R.id.ib_share);
+        deletePoiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BlocSpotActivity) mContext).shareLocation(mName, mLat, mLng);
+            }
+        });
+
+        ImageButton editNoteButton = (ImageButton) rootView.findViewById(R.id.ib_note);
+        deletePoiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BlocSpotActivity) mContext).editNoteDialog(mId, mNote);
+            }
+        });
+
+        TextView catTextView = (TextView) rootView.findViewById(R.id.tv_category_field);
+        catTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BlocSpotActivity) mContext).changeCategory(mId);
+            }
+        });
 
         return rootView;
+    }
+
+    public void refreshInfoWindow(String id) {
+        new GetPlaceInfo(id).execute();
     }
 
     @Override
@@ -71,18 +121,15 @@ public class InfoWindowFragment extends DialogFragment {
 
     private class  GetPlaceInfo extends AsyncTask<Void, Void, Cursor> {
 
-        private Context content;
         private String id;
 
-        public GetPlaceInfo(Context context, String id) {
-            this.content = context;
+        public GetPlaceInfo(String id) {
             this.id = id;
         }
 
         @Override
         protected Cursor doInBackground(Void... voids) {
-            Cursor cursor = mPoiTable.poiSpecificQuery(id);
-            return cursor;
+            return mPoiTable.poiSpecificQuery(id);
         }
 
         @Override
@@ -90,29 +137,44 @@ public class InfoWindowFragment extends DialogFragment {
             super.onPostExecute(cursor);
 
             if(cursor.moveToFirst()) {
-                String name = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_POI_NAME));
-                String note = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_NOTE));
+                mName = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_POI_NAME));
+                mNote = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_NOTE));
                 Boolean visited = cursor.getInt(cursor.getColumnIndex(Constants.TABLE_COLUMN_VISITED)) > 0;
-                Double lat = cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE));
-                Double lng = cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE));
                 String color = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_CAT_COLOR));
                 String catName = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_CAT_NAME));
+                mLat = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE));
+                mLng = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE));
 
-                mNameField.setText(name);
-                mNoteField.setText(note);
+
+                mNameField.setText(mName);
+                mNoteField.setText(mNote);
                 mCatField.setText(catName);
-                Utils.setColorString(color, mCatField);
+
+                if (color != null && mCatField != null) {
+                    Utils.setColorString(color, mCatField);
+                }
 
                 if(visited != null && visited) {
                     mVisitedButton.setImageDrawable(mContext.getResources()
                             .getDrawable(R.drawable.ic_check_on));
+                    mVisited = true;
                 }
                 else if(visited != null && !visited) {
                     mVisitedButton.setImageDrawable(mContext.getResources()
                             .getDrawable(R.drawable.ic_check_off));
+                    mVisited = false;
                 }
             }
         } // end method onPostExecute()
     } // end class GetPlaceInfo
+
+    public interface OnPoiListAdapterListener {
+        public void editNoteDialog(String id, String note);
+        public void editVisited(String id, Boolean visited);
+        public void viewOnMap(String lat, String lng);
+        public void deletePoi(String id);
+        public void changeCategory(String id);
+        public void shareLocation(String name, String lat, String lng);
+    }
 }
 

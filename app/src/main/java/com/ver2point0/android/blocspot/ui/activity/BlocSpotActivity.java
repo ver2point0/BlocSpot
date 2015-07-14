@@ -60,6 +60,7 @@ public class BlocSpotActivity extends FragmentActivity
     private PoiTable mPoiTable = new PoiTable();
     private MapFragment mMapFragment;
     private String mFilter;
+    private InfoWindowFragment mInfoWindowFragment;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -151,6 +152,7 @@ public class BlocSpotActivity extends FragmentActivity
                         Toast.makeText(BlocSpotActivity.this, getString(R.string.toast_poi_updated),
                                 Toast.LENGTH_LONG).show();
                         new GetPlaces(BlocSpotActivity.this, mFilter).execute();
+                        refreshList(id);
                     }
                 });
             }
@@ -176,7 +178,7 @@ public class BlocSpotActivity extends FragmentActivity
                     public void run() {
                         Toast.makeText(BlocSpotActivity.this, getString(R.string.toast_poi_updated),
                                 Toast.LENGTH_LONG).show();
-                        new GetPlaces(BlocSpotActivity.this, mFilter).execute();
+                        refreshList(id);
                     }
                 });
             }
@@ -214,6 +216,7 @@ public class BlocSpotActivity extends FragmentActivity
                         Toast.makeText(BlocSpotActivity.this, "POI Deleted!",
                                 Toast.LENGTH_LONG).show();
                         new GetPlaces(BlocSpotActivity.this, mFilter).execute();
+                        refreshList(id);
                     }
                 });
             }
@@ -228,8 +231,8 @@ public class BlocSpotActivity extends FragmentActivity
 
     @Override
     public void shareLocation(String name, String lat, String lng) {
-        name = name.replace(" ", "+");
-        String shareUrl = "https://www.google.com/maps/place" + name + "/@" + lat + "," + lng;
+        String newName = name.replace(" ", "+");
+        String shareUrl = "https://www.google.com/maps/place" + newName + "/@" + lat + "," + lng;
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType(Constants.INTENT_TYPE_TEXT_PLAIN);
         intent.putExtra(Intent.EXTRA_SUBJECT, name);
@@ -240,8 +243,9 @@ public class BlocSpotActivity extends FragmentActivity
 
 
     @Override
-    public void refreshList() {
+    public void refreshList(String id) {
         new GetPlaces(BlocSpotActivity.this, mFilter).execute();
+        mInfoWindowFragment.refreshInfoWindow(id);
     }
 
     private class GetPlaces extends AsyncTask<Void, Void, Cursor> {
@@ -357,8 +361,8 @@ public class BlocSpotActivity extends FragmentActivity
         mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.f_map)).getMap();
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             public boolean onMarkerClick(Marker marker) {
-                InfoWindowFragment fragment = new InfoWindowFragment(marker.getTitle(), BlocSpotActivity.this);
-                fragment.show(getFragmentManager(), "dialog");
+                mInfoWindowFragment = new InfoWindowFragment(marker.getTitle(), BlocSpotActivity.this);
+                mInfoWindowFragment.show(getFragmentManager(), "dialog");
                 return true;
             }
         });

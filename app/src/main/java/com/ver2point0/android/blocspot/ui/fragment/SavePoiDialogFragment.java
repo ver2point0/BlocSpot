@@ -51,6 +51,7 @@ public class SavePoiDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_pick_category_dialog, container, false);
         getDialog().setTitle(getString(R.string.title_save_poi_dialog));
+        getDialog().setCanceledOnTouchOutside(true);
 
         final Button savePoiButton = (Button) rootView.findViewById(R.id.bt_save);
         savePoiButton.setText(R.string.button_save_poi);

@@ -43,6 +43,7 @@ public class EditNoteFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_edit_note, container, false);
         getDialog().setTitle(getString(R.string.title_edit_note));
+        getDialog().setCanceledOnTouchOutside(true);
 
         if (savedInstanceState != null) {
             mOldNote = savedInstanceState.getString(Constants.EDIT_NOTE_TEXT);
