@@ -101,12 +101,6 @@ public class BlocSpotActivity extends FragmentActivity
             mFilter = savedInstanceState.getString(Constants.FILTER_TEXT);
         }
 
-        mEditGeofences = new EditGeofences(this);
-        mGoogleApiClient = null;
-        mPendingIntent = null;
-        mInProgress = false;
-        addGeofences();
-
         Utils.setContext(this);
 
         mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.f_map);
@@ -124,6 +118,12 @@ public class BlocSpotActivity extends FragmentActivity
         } else {
             mPoiList.setVisibility(View.INVISIBLE);
         }
+
+        mEditGeofences = new EditGeofences(this);
+        mGoogleApiClient = null;
+        mPendingIntent = null;
+        mInProgress = false;
+        addGeofences();
 
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_blocspot);
 //        setSupportActionBar(toolbar);
@@ -157,17 +157,17 @@ public class BlocSpotActivity extends FragmentActivity
         Float radius = null;
         Float lat = null;
         Float lng = null;
-        long expDur = 0;
+        Long expDur = null;
 
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.GEOFENCE_PREFS, Context.MODE_PRIVATE);
         Map<String,?> keys = sharedPreferences.getAll();
         int i = 0;
         for (Map.Entry<String,?> entry : keys.entrySet()) {
             if (i % 5 == 0) {
-                longId = entry.getKey().toString();
+                longId = entry.getKey();
 
                 if (longId.contains(Constants.KEY_TRANSITION_TYPE)) {
-                    transType = (int) entry.getValue();
+                    transType = Integer.parseInt(entry.getValue().toString());
                     Log.d("GEOTRANS", String.valueOf(transType));
                 } else if (longId.contains(Constants.KEY_RADIUS)) {
                     radius = (Float) entry.getValue();
@@ -179,7 +179,7 @@ public class BlocSpotActivity extends FragmentActivity
                     lng = (Float) entry.getValue();
                     Log.d("GEOLNG", String.valueOf(lng));
                 } else if (longId.contains(Constants.KEY_EXPIRATION_DURATION)) {
-                    expDur = (long) entry.getValue();
+                    expDur = Long.parseLong(entry.getValue().toString());
                     Log.d("GEODURATION", String.valueOf(expDur));
                 } else if (longId.contains(Constants.KEY_ID)) {
                     id = entry.getValue().toString();
@@ -200,7 +200,7 @@ public class BlocSpotActivity extends FragmentActivity
                 radius = null;
                 lat = null;
                 lng = null;
-                expDur = 0;
+                expDur = null;
             }
 
         }
