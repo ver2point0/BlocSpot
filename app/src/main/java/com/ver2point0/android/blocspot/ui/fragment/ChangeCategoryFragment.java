@@ -1,6 +1,5 @@
 package com.ver2point0.android.blocspot.ui.fragment;
 
-
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -20,31 +19,24 @@ import com.ver2point0.android.blocspot.R;
 import com.ver2point0.android.blocspot.adapter.SavePoiListAdapter;
 import com.ver2point0.android.blocspot.category.Category;
 import com.ver2point0.android.blocspot.database.table.PoiTable;
-import com.ver2point0.android.blocspot.places.Place;
-import com.ver2point0.android.blocspot.ui.activity.SearchActivity;
+import com.ver2point0.android.blocspot.ui.activity.BlocSpotActivity;
 import com.ver2point0.android.blocspot.util.Constants;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-public class SavePoiDialogFragment extends DialogFragment {
+public class ChangeCategoryFragment extends DialogFragment {
 
-    private Place mPlace;
-    private Context mContext;
+    private String mId;
     private Category mCategory;
+    private Context mContext;
     private PoiTable mPoiTable = new PoiTable();
 
-    public SavePoiDialogFragment() {}
+    public ChangeCategoryFragment() {}
 
-    public SavePoiDialogFragment(Context context, Place place) {
+    public ChangeCategoryFragment(String id, Context context) {
+        mId = id;
         mContext = context;
-        mPlace = place;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
     }
 
     @Override
@@ -53,7 +45,7 @@ public class SavePoiDialogFragment extends DialogFragment {
         getDialog().setTitle(getString(R.string.title_save_poi_dialog));
 
         final Button savePoiButton = (Button) rootView.findViewById(R.id.bt_save);
-        savePoiButton.setText(R.string.button_save_poi);
+        savePoiButton.setText(mContext.getString(R.string.button_change_category));
         if (mCategory == null) {
             savePoiButton.setEnabled(false);
         }
@@ -76,12 +68,12 @@ public class SavePoiDialogFragment extends DialogFragment {
             }
         });
 
-        Button categoryButton = (Button) rootView.findViewById(R.id.bt_add);
-        categoryButton.setOnClickListener(new View.OnClickListener() {
+        Button newCatButton = (Button) rootView.findViewById(R.id.bt_add);
+        newCatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 CreateCategoryDialogFragment dialogFragment =
-                        new CreateCategoryDialogFragment(mPlace, categories, mContext, null);
+                        new CreateCategoryDialogFragment(null, categories, mContext, mId);
                 dialogFragment.show(getFragmentManager(), "dialog");
                 dismiss();
             }
@@ -97,21 +89,18 @@ public class SavePoiDialogFragment extends DialogFragment {
 
         savePoiButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                final String name = mPlace.getName();
-                final Double lat = mPlace.getLatitude();
-                final Double lng = mPlace.getLongitude();
+            public void onClick(View view) {
                 final String catName = mCategory.getName();
                 final String catColor = mCategory.getColor();
                 new Thread() {
                     @Override
                     public void run() {
                         super.run();
-                        mPoiTable.addNewPoi(name, lat, lng, catName, catColor);
+                        mPoiTable.updateCategory(mId, catName, catColor);
                     }
                 }.start();
-                Toast.makeText(mContext, mContext.getString(R.string.toast_poi_saved), Toast.LENGTH_LONG).show();
-                ((SearchActivity) mContext).returnToMain();
+                Toast.makeText(mContext, mContext.getString(R.string.toast_poi_updated), Toast.LENGTH_LONG).show();
+                ((BlocSpotActivity) mContext).refreshList();
                 dismiss();
             }
         });
@@ -122,6 +111,11 @@ public class SavePoiDialogFragment extends DialogFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        try {
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                + " must implement OnFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -129,7 +123,7 @@ public class SavePoiDialogFragment extends DialogFragment {
         super.onDetach();
     }
 
-    public interface OnSavePoiInteractionListener {
-        public void returnToMain();
+    public interface OnChangeCategoryListener{
+        public void refreshList();
     }
 }

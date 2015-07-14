@@ -26,7 +26,11 @@ public abstract class Table {
                 super.run();
                 if (BlocSpotApplication.get() == null) {
                     while (BlocSpotApplication.get() == null) {
-                        mDatabase = BlocSpotApplication.get().getWritableDb();
+                        try {
+                            mDatabase = BlocSpotApplication.get().getWritableDb();
+                        } catch (NullPointerException ignored) {
+                           ignored.printStackTrace();
+                        }
                     }
                 } else {
                     mDatabase = BlocSpotApplication.get().getWritableDb();
@@ -37,5 +41,4 @@ public abstract class Table {
 
     public abstract String getCreateStatement();
 
-    public abstract void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion);
 }

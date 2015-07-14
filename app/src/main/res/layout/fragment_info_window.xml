@@ -3,7 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:padding="@dimen/activity_vertical_padding">
 
     <LinearLayout
         android:id="@+id/ll_header"
@@ -33,7 +35,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text=""
-        android:layout_below="@+id/ll_header"/>
+        android:layout_below="@+id/ll_header"
+        android:layout_marginBottom="@dimen/adapter_mini_margin"/>
 
     <LinearLayout
         android:id="@+id/ll_footer"
@@ -44,6 +47,7 @@
 
         <TextView
             android:id="@+id/tv_category_field"
+            android:gravity="center"
             android:layout_weight="0.45"
             android:layout_width="0dp"
             android:layout_height="match_parent"

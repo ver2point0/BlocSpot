@@ -23,8 +23,6 @@ import com.ver2point0.android.blocspot.util.Utils;
 public class PoiListAdapter extends CursorAdapter {
 
     private Context mContext;
-    private Cursor mCursor;
-    private View mView;
     private final LayoutInflater mInflater;
     private Location mLocation;
     private PopupMenu mPopupMenu;
@@ -33,32 +31,32 @@ public class PoiListAdapter extends CursorAdapter {
     private boolean mVisited;
     private String mLat;
     private String mLng;
+    private String mName;
 
     public PoiListAdapter(Context context, Cursor cursor, Location location) {
         super(context, cursor);
         mContext = context;
-        mCursor = cursor;
         mInflater = LayoutInflater.from(context);
         mLocation = location;
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-        mView = mInflater.inflate(R.layout.adapter_poi_list, null);
+        View rootView = mInflater.inflate(R.layout.adapter_poi_list, null);
 
         ViewHolder holder = new ViewHolder();
-        holder.name = (TextView) mView.findViewById(R.id.tv_place_name);
-        holder.note = (TextView) mView.findViewById(R.id.tv_note_text);
-        holder.checkMark = (ImageView) mView.findViewById(R.id.iv_check_image);
-        holder.dist = (TextView) mView.findViewById(R.id.tv_place_dist);
-        holder.threeDots = (ImageButton) mView.findViewById(R.id.ib_three_dots);
-        holder.color = (TextView) mView.findViewById(R.id.tv_color_area);
-        holder.id = (TextView) mView.findViewById(R.id.tv_id_holder);
-        holder.visited = (TextView) mView.findViewById(R.id.tv_id_visited_holder);
-        holder.lat = (TextView) mView.findViewById(R.id.tv_lat_holder);
-        holder.lng = (TextView) mView.findViewById(R.id.tv_lng_holder);
-        mView.setTag(holder);
-        return mView;
+        holder.name = (TextView) rootView.findViewById(R.id.tv_place_name);
+        holder.note = (TextView) rootView.findViewById(R.id.tv_note_text);
+        holder.checkMark = (ImageView) rootView.findViewById(R.id.iv_check_image);
+        holder.dist = (TextView) rootView.findViewById(R.id.tv_place_dist);
+        holder.threeDots = (ImageButton) rootView.findViewById(R.id.ib_three_dots);
+        holder.color = (TextView) rootView.findViewById(R.id.tv_color_area);
+        holder.id = (TextView) rootView.findViewById(R.id.tv_id_holder);
+        holder.visited = (TextView) rootView.findViewById(R.id.tv_id_visited_holder);
+        holder.lat = (TextView) rootView.findViewById(R.id.tv_lat_holder);
+        holder.lng = (TextView) rootView.findViewById(R.id.tv_lng_holder);
+        rootView.setTag(holder);
+        return rootView;
     }
 
     @Override
@@ -87,10 +85,10 @@ public class PoiListAdapter extends CursorAdapter {
         float dist = (float) (mLocation.distanceTo(placeLoc) / 1609.34);
         holder.dist.setText(String.format("%.2f", dist) + " mi");
 
-        if(visited != null && visited == true) {
+        if(visited != null && visited) {
             holder.checkMark.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_on));
             holder.visited.setText(Constants.TRUE);
-        } else if (visited != null && visited == false) {
+        } else if (visited != null && !visited) {
             holder.checkMark.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_off));
             holder.visited.setText(Constants.FALSE);
         }
@@ -103,13 +101,14 @@ public class PoiListAdapter extends CursorAdapter {
         mPopupMenu.getMenu().add(Menu.NONE, 0, Menu.NONE, context.getString(R.string.popup_edit_note));
         mPopupMenu.getMenu().add(Menu.NONE, 1, Menu.NONE, context.getString(R.string.popup_visited));
         mPopupMenu.getMenu().add(Menu.NONE, 2, Menu.NONE, context.getString(R.string.popup_category));
-        mPopupMenu.getMenu().add(Menu.NONE, 3, Menu.NONE, "View on Map");
-        mPopupMenu.getMenu().add(Menu.NONE, 4, Menu.NONE, "Share POI");
-        mPopupMenu.getMenu().add(Menu.NONE, 5, Menu.NONE, "Delete POI");
+        mPopupMenu.getMenu().add(Menu.NONE, 3, Menu.NONE, context.getString(R.string.popup_view_map));
+        mPopupMenu.getMenu().add(Menu.NONE, 4, Menu.NONE, context.getString(R.string.popup_share));
+        mPopupMenu.getMenu().add(Menu.NONE, 5, Menu.NONE, context.getString(R.string.popup_delete));
 
         holder.threeDots.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mName = holder.name.getText().toString();
                 mNote = holder.note.getText().toString();
                 mId = holder.id.getText().toString();
                 mLat = holder.lat.getText().toString();
@@ -135,11 +134,13 @@ public class PoiListAdapter extends CursorAdapter {
                         ((BlocSpotActivity) mContext).editVisited(mId, !mVisited);
                         break;
                     case 2:
+                        ((BlocSpotActivity) mContext).changeCategory(mId);
                         break;
                     case 3:
                         ((BlocSpotActivity) mContext).viewOnMap(mLat, mLng);
                         break;
                     case 4:
+                        ((BlocSpotActivity) mContext).shareLocation(mName, mLat, mLng);
                         break;
                     case 5:
                         ((BlocSpotActivity) mContext).deletePoi(mId);
@@ -168,5 +169,7 @@ public class PoiListAdapter extends CursorAdapter {
         public void editVisited(String id, Boolean visited);
         public void viewOnMap(String lat, String lng);
         public void deletePoi(String id);
+        public void changeCategory(String id);
+        public void shareLocation(String name, String lat, String lng);
     }
 }

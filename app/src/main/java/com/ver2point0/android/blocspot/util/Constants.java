@@ -61,5 +61,6 @@ public class Constants {
     public static final String CATEGORY_UNCATEGORIZED = "categoryUncategorized";
     public static final String TRUE = "true";
     public static final String FALSE = "false";
+    public static final String INTENT_TYPE_TEXT_PLAIN = "text/plain";
 
 }

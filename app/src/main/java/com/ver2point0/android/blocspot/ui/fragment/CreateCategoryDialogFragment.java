@@ -30,13 +30,15 @@ public class CreateCategoryDialogFragment extends DialogFragment {
     private EditText mNameField;
     private RadioGroup mRadioGroup;
     private String mColorString;
+    private String mId;
 
     public CreateCategoryDialogFragment() {}
 
-    public CreateCategoryDialogFragment(Place place, ArrayList<Category> categories, Context context) {
+    public CreateCategoryDialogFragment(Place place, ArrayList<Category> categories, Context context, String id) {
         mPlace = place;
         mCategories = categories;
         mContext = context;
+        mId = id;
     }
 
     @Override
@@ -58,8 +60,13 @@ public class CreateCategoryDialogFragment extends DialogFragment {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SavePoiDialogFragment poiDialog = new SavePoiDialogFragment(mContext, mPlace);
-                poiDialog.show(getFragmentManager(), "dialog");
+                if (mPlace != null) {
+                    SavePoiDialogFragment poiDialog = new SavePoiDialogFragment(mContext, mPlace);
+                    poiDialog.show(getFragmentManager(), "dialog");
+                } else  {
+                    ChangeCategoryFragment catDialog = new ChangeCategoryFragment(mId, mContext);
+                    catDialog.show(getFragmentManager(), "dialog");
+                }
                 dismiss();
             }
         });
@@ -84,8 +91,13 @@ public class CreateCategoryDialogFragment extends DialogFragment {
                     prefsEditor.putString(Constants.CATEGORY_ARRAY, jsonCat);
                     prefsEditor.commit();
 
-                    SavePoiDialogFragment poiDialog = new SavePoiDialogFragment(mContext, mPlace);
-                    poiDialog.show(getFragmentManager(), "dialog");
+                    if (mPlace != null) {
+                        SavePoiDialogFragment poiDialog = new SavePoiDialogFragment(mContext, mPlace);
+                        poiDialog.show(getFragmentManager(), "dialog");
+                    } else  {
+                        ChangeCategoryFragment catDialog = new ChangeCategoryFragment(mId, mContext);
+                        catDialog.show(getFragmentManager(), "dialog");
+                    }
                     dismiss();
                 }
             }

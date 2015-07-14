@@ -30,6 +30,11 @@
     <string name="popup_edit_note">Edit note</string>
     <string name="popup_visited">Mark as Visited</string>
     <string name="popup_category">Change Category</string>
+    <string name="popup_view_map">View on Map</string>
+    <string name="popup_share">Share POI</string>
+    <string name="popup_delete">Delete POI</string>
+    <string name="button_change_category">Update</string>
+    <string name="intent_share_poi">Share POI</string>
 
     <string name="empty_poi_list">You have not selected any Points of Interest!
         \nClick the search button above to begin.</string>
@@ -58,5 +63,4 @@
         <item>Shopping Mall</item>
     </string-array>
 
-    <string name="hello_world">Hello world!</string>
 </resources>

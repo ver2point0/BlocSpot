@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,8 +35,10 @@ import com.ver2point0.android.blocspot.R;
 import com.ver2point0.android.blocspot.adapter.PoiListAdapter;
 import com.ver2point0.android.blocspot.category.Category;
 import com.ver2point0.android.blocspot.database.table.PoiTable;
+import com.ver2point0.android.blocspot.ui.fragment.ChangeCategoryFragment;
 import com.ver2point0.android.blocspot.ui.fragment.EditNoteFragment;
 import com.ver2point0.android.blocspot.ui.fragment.FilterDialogFragment;
+import com.ver2point0.android.blocspot.ui.fragment.InfoWindowFragment;
 import com.ver2point0.android.blocspot.util.Constants;
 import com.ver2point0.android.blocspot.util.Utils;
 
@@ -47,7 +48,8 @@ import java.util.ArrayList;
 
 public class BlocSpotActivity extends FragmentActivity
         implements OnMapReadyCallback, FilterDialogFragment.OnFilterListener,
-        EditNoteFragment.OnNoteUpdateListener, PoiListAdapter.OnPoiListAdapterListener {
+        EditNoteFragment.OnNoteUpdateListener, PoiListAdapter.OnPoiListAdapterListener,
+        ChangeCategoryFragment.OnChangeCategoryListener {
 
     private final String TAG = getClass().getSimpleName();
     private GoogleMap mGoogleMap;
@@ -89,7 +91,7 @@ public class BlocSpotActivity extends FragmentActivity
 
         if (mListState) {
             getFragmentManager().beginTransaction().hide(mMapFragment).commit();
-        } else if (mListState) {
+        } else {
             mPoiList.setVisibility(View.INVISIBLE);
         }
 
@@ -218,6 +220,29 @@ public class BlocSpotActivity extends FragmentActivity
         }.start();
     }
 
+    @Override
+    public void changeCategory(String id){
+        ChangeCategoryFragment dialog = new ChangeCategoryFragment(id, this);
+        dialog.show(getFragmentManager(), "dialog");
+    }
+
+    @Override
+    public void shareLocation(String name, String lat, String lng) {
+        name = name.replace(" ", "+");
+        String shareUrl = "https://www.google.com/maps/place" + name + "/@" + lat + "," + lng;
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType(Constants.INTENT_TYPE_TEXT_PLAIN);
+        intent.putExtra(Intent.EXTRA_SUBJECT, name);
+        intent.putExtra(Intent.EXTRA_TEXT, shareUrl);
+        startActivity(Intent.createChooser(intent, getString(R.string.intent_share_poi)));
+    }
+
+
+
+    @Override
+    public void refreshList() {
+        new GetPlaces(BlocSpotActivity.this, mFilter).execute();
+    }
 
     private class GetPlaces extends AsyncTask<Void, Void, Cursor> {
 
@@ -273,8 +298,8 @@ public class BlocSpotActivity extends FragmentActivity
             if (dialog.isShowing()) {
                 try {
                     dialog.dismiss();
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
+                } catch (IllegalArgumentException ignored) {
+                    ignored.printStackTrace();
                 }
             }
 
@@ -286,12 +311,13 @@ public class BlocSpotActivity extends FragmentActivity
             for (int i = 0; i < cursor.getCount(); i++) {
                 c = ((Cursor) adapter.getItem(i));
                 mGoogleMap.addMarker(new MarkerOptions()
-                        .title(cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_POI_NAME)))
+                        .title(cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_ID)))
                         .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE)),
                                 cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE))))
-                        .icon(BitmapDescriptorFactory.defaultMarker(getMarkerColor(c))))
-                        .setSnippet(c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_NOTE)));
+                        .icon(BitmapDescriptorFactory
+                                .defaultMarker(getMarkerColor(c))));
             }
+
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()))
                     .zoom(14)
@@ -329,35 +355,11 @@ public class BlocSpotActivity extends FragmentActivity
 
     private void initCompo() {
         mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.f_map)).getMap();
-        mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-            @Override
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
-
-            @Override
-            public View getInfoContents(final Marker marker) {
-                View view = getLayoutInflater().inflate(R.layout.adapter_info_window, null);
-
-                final String name = marker.getTitle();
-                final String note = marker.getSnippet();
-
-                TextView nameField = (TextView) view.findViewById(R.id.tv_name_field);
-                TextView noteField = (TextView) view.findViewById(R.id.tv_note_field);
-                TextView catName = (TextView) view.findViewById(R.id.tv_category_field);
-
-                nameField.setText(name);
-                noteField.setText(note);
-
-                ImageButton noteButton = (ImageButton) view.findViewById(R.id.ib_note);
-                noteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                    }
-                });
-
-                return view;
+        mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            public boolean onMarkerClick(Marker marker) {
+                InfoWindowFragment fragment = new InfoWindowFragment(marker.getTitle(), BlocSpotActivity.this);
+                fragment.show(getFragmentManager(), "dialog");
+                return true;
             }
         });
     }
