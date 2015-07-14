@@ -9,12 +9,28 @@ public class Constants {
     public static final String EDIT_NOTE_TEXT = "editNoteText";
 
     public static final String MAIN_PREFS = "mainPrefs";
+    public static final String GEOFENCE_PREFS = "geofencePrefs";
     public static final String CATEGORY_ARRAY = "categoryArray";
+
+    public static final String KEY_ID = "com.example.android.geofence.KEY_ID";
+    public static final String KEY_LATITUDE = "com.example.android.geofence.KEY_LATITUDE";
+    public static final String KEY_LONGITUDE = "com.example.android.geofence.KEY_LONGITUDE";
+    public static final String KEY_RADIUS = "com.example.android.geofence.KEY_RADIUS";
+    public static final String KEY_EXPIRATION_DURATION = "com.example.android.geofence.KEY_EXPIRATION_DURATION";
+    public static final String KEY_TRANSITION_TYPE = "com.example.android.geofence.KEY_TRANSITION_TYPE";
+    public static final String KEY_PREFIX = "com.example.android.geofence.KEY";
+
+    public static final long INVALID_LONG_VALUE = -9991;
+    public static final float INVALID_FLOAT_VALUE = -999.0f;
+    public static final int INVALID_INT_VALUE = -999;
+    public static final float GEOFENCE_RADIUS = 160.934f;
+    public static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    public static final String APPTAG = "Geofence Detection";
 
     public static final String API_KEY = "AIzaSyBAUmIqphWvpc_YppTWRAfnCR_bno27ny4";
 
     public static final String DATABASE_NAME = "GoPlaces";
-    public static final int DATABASE_VERSION = 8;
+    public static final int DATABASE_VERSION = 13;
 
     public static final String TABLE_POI_NAME = "poiTable";
     public static final String TABLE_COLUMN_ID = "_id";
@@ -25,6 +41,7 @@ public class Constants {
     public static final String TABLE_COLUMN_CAT_COLOR = "catColor";
     public static final String TABLE_COLUMN_NOTE = "note";
     public static final String TABLE_COLUMN_VISITED = "visited";
+    public static final String TABLE_COLUMN_GEO_ID = "geoId";
 
     public static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/search/json?";
     public static final String ALL_PLACE_TYPES = "&types=airport|amusement_park|aquarium|" +
