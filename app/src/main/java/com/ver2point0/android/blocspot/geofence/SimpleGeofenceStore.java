@@ -11,7 +11,7 @@ public class SimpleGeofenceStore {
     private final SharedPreferences mPrefs;
 
     public SimpleGeofenceStore(Context context) {
-        mPrefs = context.getSharedPreferences(Constants.MAIN_PREFS, Context.MODE_PRIVATE);
+        mPrefs = context.getSharedPreferences(Constants.GEOFENCE_PREFS, Context.MODE_PRIVATE);
     }
 
     public SimpleGeofence getGeofence(String id) {
@@ -40,6 +40,7 @@ public class SimpleGeofenceStore {
 
     public void setGeofence(String id, SimpleGeofence geofence) {
         SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putString(getGeofenceFieldKey(id, Constants.KEY_ID), id);
         editor.putFloat(getGeofenceFieldKey(id, Constants.KEY_LATITUDE), (float) geofence.getLatitude());
         editor.putFloat(getGeofenceFieldKey(id, Constants.KEY_LONGITUDE), (float) geofence.getLongitude());
         editor.putFloat(getGeofenceFieldKey(id, Constants.KEY_RADIUS), geofence.getRadius());

@@ -9,8 +9,10 @@ public class Constants {
     public static final String EDIT_NOTE_TEXT = "editNoteText";
 
     public static final String MAIN_PREFS = "mainPrefs";
+    public static final String GEOFENCE_PREFS = "geofencePrefs";
     public static final String CATEGORY_ARRAY = "categoryArray";
 
+    public static final String KEY_ID = "com.example.android.geofence.KEY_ID";
     public static final String KEY_LATITUDE = "com.example.android.geofence.KEY_LATITUDE";
     public static final String KEY_LONGITUDE = "com.example.android.geofence.KEY_LONGITUDE";
     public static final String KEY_RADIUS = "com.example.android.geofence.KEY_RADIUS";
@@ -28,7 +30,7 @@ public class Constants {
     public static final String API_KEY = "AIzaSyBAUmIqphWvpc_YppTWRAfnCR_bno27ny4";
 
     public static final String DATABASE_NAME = "GoPlaces";
-    public static final int DATABASE_VERSION = 8;
+    public static final int DATABASE_VERSION = 9;
 
     public static final String TABLE_POI_NAME = "poiTable";
     public static final String TABLE_COLUMN_ID = "_id";
@@ -39,6 +41,7 @@ public class Constants {
     public static final String TABLE_COLUMN_CAT_COLOR = "catColor";
     public static final String TABLE_COLUMN_NOTE = "note";
     public static final String TABLE_COLUMN_VISITED = "visited";
+    public static final String TABLE_COLUMN_GEO_ID = "geoId";
 
     public static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/search/json?";
     public static final String ALL_PLACE_TYPES = "&types=airport|amusement_park|aquarium|" +

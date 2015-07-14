@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -46,6 +47,7 @@ import com.ver2point0.android.blocspot.category.Category;
 import com.ver2point0.android.blocspot.database.table.PoiTable;
 import com.ver2point0.android.blocspot.geofence.EditGeofences;
 import com.ver2point0.android.blocspot.geofence.GeofenceIntentService;
+import com.ver2point0.android.blocspot.geofence.SimpleGeofence;
 import com.ver2point0.android.blocspot.ui.fragment.ChangeCategoryFragment;
 import com.ver2point0.android.blocspot.ui.fragment.EditNoteFragment;
 import com.ver2point0.android.blocspot.ui.fragment.FilterDialogFragment;
@@ -55,6 +57,7 @@ import com.ver2point0.android.blocspot.util.Utils;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 public class BlocSpotActivity extends FragmentActivity
@@ -78,6 +81,8 @@ public class BlocSpotActivity extends FragmentActivity
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private EditGeofences mEditGeofences;
+    private PendingIntent mPendingIntent;
+    private ArrayList<Geofence> mCurrentGeofences;
 
 
     @Override
@@ -97,7 +102,10 @@ public class BlocSpotActivity extends FragmentActivity
         }
 
         mEditGeofences = new EditGeofences(this);
+        mGoogleApiClient = null;
+        mPendingIntent = null;
         mInProgress = false;
+        addGeofences();
 
         Utils.setContext(this);
 
@@ -128,46 +136,99 @@ public class BlocSpotActivity extends FragmentActivity
     }
 
     @Override
-    public void onConnected(Bundle bundle) {
-        mLocationRequest = LocationRequest.create();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(1000);
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,
-                (com.google.android.gms.location.LocationListener) this);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {}
-
-    @Override
-    public void onLocationChanged(Location location) {}
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-    @Override
-    public void onProviderEnabled(String provider) {}
-
-    @Override
-    public void onProviderDisabled(String provider) {}
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {}
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         switch (requestCode) {
             case Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        mEditGeofences.setInProgressFlag(false);
+                        mInProgress = false;
+                        addGeofences();
                         break;
                 }
         }
     }
 
+    private void addGeofences() {
+        mCurrentGeofences = new ArrayList<Geofence>();
 
-    public boolean servicesConnected() {
+        String longId;
+        String id = null;
+        int transType = 0;
+        Float radius = null;
+        Float lat = null;
+        Float lng = null;
+        long expDur = 0;
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.GEOFENCE_PREFS, Context.MODE_PRIVATE);
+        Map<String,?> keys = sharedPreferences.getAll();
+        int i = 0;
+        for (Map.Entry<String,?> entry : keys.entrySet()) {
+            if (i % 5 == 0) {
+                longId = entry.getKey().toString();
+
+                if (longId.contains(Constants.KEY_TRANSITION_TYPE)) {
+                    transType = (int) entry.getValue();
+                    Log.d("GEOTRANS", String.valueOf(transType));
+                } else if (longId.contains(Constants.KEY_RADIUS)) {
+                    radius = (Float) entry.getValue();
+                    Log.d("GEORADIUS", String.valueOf(radius));
+                } else if (longId.contains(Constants.KEY_LATITUDE)) {
+                    lat = (Float) entry.getValue();
+                    Log.d("GEOTLAT", String.valueOf(lat));
+                } else if (longId.contains(Constants.KEY_LONGITUDE)) {
+                    lng = (Float) entry.getValue();
+                    Log.d("GEOLNG", String.valueOf(lng));
+                } else if (longId.contains(Constants.KEY_EXPIRATION_DURATION)) {
+                    expDur = (long) entry.getValue();
+                    Log.d("GEODURATION", String.valueOf(expDur));
+                } else if (longId.contains(Constants.KEY_ID)) {
+                    id = entry.getValue().toString();
+                    Log.d("GEOID", id);
+                }
+            }
+
+            Log.d("map values", entry.getKey() + ": " + entry.getValue().toString());
+            i++;
+
+            if (i % 6 == 0) {
+                SimpleGeofence geofence = new SimpleGeofence(id, lat, lng, radius, expDur, transType);
+                mCurrentGeofences.add(geofence.toGeofence());
+                Log.e("We have here", id);
+                i = 0;
+                id = null;
+                transType = 0;
+                radius = null;
+                lat = null;
+                lng = null;
+                expDur = 0;
+            }
+
+        }
+
+
+        if (!servicesConnected()) {
+            return;
+        }
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        if (!mInProgress) {
+            mInProgress = true;
+            mGoogleApiClient.connect();
+        } else {
+
+        }
+    }
+
+    private void continueAddGeofences() {
+        mPendingIntent = getTransitionPendingIntent();
+    }
+
+    private boolean servicesConnected() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 
         if (ConnectionResult.SUCCESS == resultCode) {
@@ -188,8 +249,37 @@ public class BlocSpotActivity extends FragmentActivity
         return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+    @Override
+    public void onConnected(Bundle bundle) {
+//        mLocationRequest = LocationRequest.create();
+//        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//        mLocationRequest.setInterval(1000); // Update location every second
+//        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,
+//                (com.google.android.gms.location.LocationListener) this);
+        continueAddGeofences();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {}
+
+    @Override
+    public void onLocationChanged(Location location) {}
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+    @Override
+    public void onProviderEnabled(String provider) {}
+
+    @Override
+    public void onProviderDisabled(String provider) {}
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {}
+
+
     private void checkCategoryPreference() {
-        SharedPreferences sharedPreferences = getSharedPreferences(Constants.MAIN_PREFS, 0);
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.MAIN_PREFS, Context.MODE_PRIVATE);
         String json = sharedPreferences.getString(Constants.CATEGORY_ARRAY, null);
         Type type = new TypeToken<Category>(){}.getType();
         ArrayList<Category> categories = new Gson().fromJson(json, type);

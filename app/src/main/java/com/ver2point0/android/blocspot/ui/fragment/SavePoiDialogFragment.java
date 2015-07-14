@@ -29,6 +29,7 @@ import com.ver2point0.android.blocspot.util.Constants;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class SavePoiDialogFragment extends DialogFragment {
 
@@ -110,14 +111,15 @@ public class SavePoiDialogFragment extends DialogFragment {
                 final Double lng = mPlace.getLongitude();
                 final String catName = mCategory.getName();
                 final String catColor = mCategory.getColor();
-                mGeofence = new SimpleGeofence(name, lat, lng, Constants.GEOFENCE_RADIUS,
+                final String id = UUID.randomUUID().toString();
+                mGeofence = new SimpleGeofence(id, lat, lng, Constants.GEOFENCE_RADIUS,
                         Geofence.NEVER_EXPIRE, Geofence.GEOFENCE_TRANSITION_ENTER);
-                mGeofenceStore.setGeofence(name, mGeofence);
+                mGeofenceStore.setGeofence(id, mGeofence);
                 new Thread() {
                     @Override
                     public void run() {
                         super.run();
-                        mPoiTable.addNewPoi(name, lat, lng, catName, catColor);
+                        mPoiTable.addNewPoi(name, lat, lng, catName, catColor, id);
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
