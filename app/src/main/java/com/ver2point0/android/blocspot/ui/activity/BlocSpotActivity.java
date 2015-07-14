@@ -16,8 +16,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,6 +28,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -33,6 +36,7 @@ import com.ver2point0.android.blocspot.R;
 import com.ver2point0.android.blocspot.adapter.PoiListAdapter;
 import com.ver2point0.android.blocspot.category.Category;
 import com.ver2point0.android.blocspot.database.table.PoiTable;
+import com.ver2point0.android.blocspot.ui.fragment.EditNoteFragment;
 import com.ver2point0.android.blocspot.ui.fragment.FilterDialogFragment;
 import com.ver2point0.android.blocspot.util.Constants;
 import com.ver2point0.android.blocspot.util.Utils;
@@ -42,7 +46,8 @@ import java.util.ArrayList;
 
 
 public class BlocSpotActivity extends FragmentActivity
-        implements OnMapReadyCallback, FilterDialogFragment.OnFilterListener {
+        implements OnMapReadyCallback, FilterDialogFragment.OnFilterListener,
+        EditNoteFragment.OnNoteUpdateListener, PoiListAdapter.OnPoiListAdapterListener {
 
     private final String TAG = getClass().getSimpleName();
     private GoogleMap mGoogleMap;
@@ -131,6 +136,89 @@ public class BlocSpotActivity extends FragmentActivity
         new GetPlaces(BlocSpotActivity.this, name).execute();
     }
 
+    @Override
+    public void updateNoteDataBase(final String id, final String note) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                mPoiTable.updateNote(id, note);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(BlocSpotActivity.this, getString(R.string.toast_poi_updated),
+                                Toast.LENGTH_LONG).show();
+                        new GetPlaces(BlocSpotActivity.this, mFilter).execute();
+                    }
+                });
+            }
+        }.start();
+    }
+
+    @Override
+    public void editNoteDialog(String id, String note) {
+        EditNoteFragment dialog = new EditNoteFragment(id, this, note);
+        dialog.show(getFragmentManager(), "dialog");
+    }
+
+    @Override
+    public void editVisited(final String id, final Boolean visited) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                mPoiTable.updateVisited(id, visited);
+                Log.e("ERROR", String.valueOf(visited));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(BlocSpotActivity.this, getString(R.string.toast_poi_updated),
+                                Toast.LENGTH_LONG).show();
+                        new GetPlaces(BlocSpotActivity.this, mFilter).execute();
+                    }
+                });
+            }
+        }.start();
+    }
+
+    @Override
+    public void viewOnMap(String lat, String lng) {
+        getFragmentManager().beginTransaction().show(mMapFragment).commit();
+        mPoiList.setVisibility(View.INVISIBLE);
+        mListState = false;
+        this.invalidateOptionsMenu();
+
+        Double latitude = Double.parseDouble(lat);
+        Double longitude = Double.parseDouble(lng);
+
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(latitude, longitude))
+                .zoom(20)
+                .tilt(0)
+                .build();
+        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    @Override
+    public void deletePoi(final String id) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                mPoiTable.deletePoi(id);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(BlocSpotActivity.this, "POI Deleted!",
+                                Toast.LENGTH_LONG).show();
+                        new GetPlaces(BlocSpotActivity.this, mFilter).execute();
+                    }
+                });
+            }
+        }.start();
+    }
+
+
     private class GetPlaces extends AsyncTask<Void, Void, Cursor> {
 
         private ProgressDialog dialog;
@@ -201,7 +289,8 @@ public class BlocSpotActivity extends FragmentActivity
                         .title(cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_POI_NAME)))
                         .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE)),
                                 cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE))))
-                        .icon(BitmapDescriptorFactory.defaultMarker(getMarkerColor(c))));
+                        .icon(BitmapDescriptorFactory.defaultMarker(getMarkerColor(c))))
+                        .setSnippet(c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_NOTE)));
             }
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()))
@@ -240,6 +329,37 @@ public class BlocSpotActivity extends FragmentActivity
 
     private void initCompo() {
         mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.f_map)).getMap();
+        mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(final Marker marker) {
+                View view = getLayoutInflater().inflate(R.layout.adapter_info_window, null);
+
+                final String name = marker.getTitle();
+                final String note = marker.getSnippet();
+
+                TextView nameField = (TextView) view.findViewById(R.id.tv_name_field);
+                TextView noteField = (TextView) view.findViewById(R.id.tv_note_field);
+                TextView catName = (TextView) view.findViewById(R.id.tv_category_field);
+
+                nameField.setText(name);
+                noteField.setText(note);
+
+                ImageButton noteButton = (ImageButton) view.findViewById(R.id.ib_note);
+                noteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
+
+                return view;
+            }
+        });
     }
 
     @Override

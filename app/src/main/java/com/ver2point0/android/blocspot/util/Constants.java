@@ -6,6 +6,7 @@ public class Constants {
     public static final String LIST_STATE = "listState";
     public static final String QUERY_TEXT = "queryText";
     public static final String FILTER_TEXT = "filterText";
+    public static final String EDIT_NOTE_TEXT = "editNoteText";
 
     public static final String MAIN_PREFS = "mainPrefs";
     public static final String CATEGORY_ARRAY = "categoryArray";
@@ -58,5 +59,7 @@ public class Constants {
     public static final String EMPTY_STRING = "";
     public static final String COMMA = ",";
     public static final String CATEGORY_UNCATEGORIZED = "categoryUncategorized";
+    public static final String TRUE = "true";
+    public static final String FALSE = "false";
 
 }

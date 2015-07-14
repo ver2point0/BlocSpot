@@ -73,4 +73,22 @@ public class PoiTable extends Table {
                 new String[]{name},
                 null, null, null, null);
     }
+
+    public void updateNote(String id, String note) {
+        ContentValues values = new ContentValues();
+        values.put(Constants.TABLE_COLUMN_NOTE, note);
+        mDatabase.update(Constants.TABLE_POI_NAME, values,
+                Constants.TABLE_COLUMN_ID + " = ?", new String[]{id});
+    }
+
+    public void updateVisited(String id, boolean visited) {
+        ContentValues values = new ContentValues();
+        values.put(Constants.TABLE_COLUMN_VISITED, visited);
+        mDatabase.update(Constants.TABLE_POI_NAME, values,
+                Constants.TABLE_COLUMN_ID + " = ?", new String[]{id});
+    }
+
+    public void deletePoi(String id) {
+        mDatabase.delete(Constants.TABLE_POI_NAME, Constants.TABLE_COLUMN_ID + " = ?", new String[]{id});
+    }
 }

@@ -20,11 +20,13 @@
             android:id="@+id/tv_color_area"
             android:layout_width="@dimen/color_area"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"/>
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_toRightOf="@+id/tv_color_area"
+            android:layout_toEndOf="@+id/tv_color_area"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -34,7 +36,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:padding="@dimen/activity_vertical_padding"
-                android:layout_marginRight="@dimen/adapter_mini_margin">
+                android:layout_marginRight="@dimen/adapter_mini_margin"
+                android:layout_marginEnd="@dimen/adapter_mini_margin">
 
                 <TextView
                     android:id="@+id/tv_place_name"
@@ -67,6 +70,7 @@
 
                 <ImageView
                     android:id="@+id/iv_check_image"
+                    android:contentDescription="@string/description_visited"
                     android:src="@drawable/ic_check_off"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -76,7 +80,7 @@
                 <TextView
                     android:id="@+id/tv_place_dist"
                     android:text=""
-                    android:textColor="#d3d3d3"
+                    android:textColor="#D3D3D3"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -87,13 +91,41 @@
 
             <ImageButton
                 android:id="@+id/ib_three_dots"
+                android:contentDescription="@string/description_popup_menu"
                 android:layout_weight="0.1"
                 android:src="@drawable/ic_menu_overflow"
-                android:layout_centerVertical="true"
                 android:background="@android:color/white"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"/>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_id_holder"
+            android:text=""
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_id_visited_holder"
+            android:text=""
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_lat_holder"
+            android:text=""
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_lng_holder"
+            android:text=""
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
     </RelativeLayout>
 </LinearLayout>
