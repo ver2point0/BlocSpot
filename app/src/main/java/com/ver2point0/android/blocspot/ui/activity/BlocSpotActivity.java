@@ -15,7 +15,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,8 +32,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -47,7 +47,6 @@ import com.ver2point0.android.blocspot.category.Category;
 import com.ver2point0.android.blocspot.database.table.PoiTable;
 import com.ver2point0.android.blocspot.geofence.EditGeofences;
 import com.ver2point0.android.blocspot.geofence.GeofenceIntentService;
-import com.ver2point0.android.blocspot.geofence.SimpleGeofence;
 import com.ver2point0.android.blocspot.ui.fragment.ChangeCategoryFragment;
 import com.ver2point0.android.blocspot.ui.fragment.EditNoteFragment;
 import com.ver2point0.android.blocspot.ui.fragment.FilterDialogFragment;
@@ -57,10 +56,9 @@ import com.ver2point0.android.blocspot.util.Utils;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Map;
 
 
-public class BlocSpotActivity extends FragmentActivity
+public class BlocSpotActivity extends AppCompatActivity
         implements OnMapReadyCallback, FilterDialogFragment.OnFilterListener,
         EditNoteFragment.OnNoteUpdateListener, PoiListAdapter.OnPoiListAdapterListener,
         ChangeCategoryFragment.OnChangeCategoryListener, GoogleApiClient.ConnectionCallbacks,
@@ -73,7 +71,7 @@ public class BlocSpotActivity extends FragmentActivity
     private boolean mListState = true;
     private ListView mPoiList;
     private PoiTable mPoiTable = new PoiTable();
-    private MapFragment mMapFragment;
+    private SupportMapFragment mMapFragment;
     private String mFilter;
     private InfoWindowFragment mInfoWindowFragment;
     private PendingIntent mGeofenceRequestIntent;
@@ -103,18 +101,18 @@ public class BlocSpotActivity extends FragmentActivity
 
         Utils.setContext(this);
 
-        mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.f_map);
+        mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.f_map);
         mPoiList = (ListView) findViewById(R.id.lv_list);
         TextView emptyView = (TextView) findViewById(R.id.tv_empty_list_view);
         mPoiList.setEmptyView(emptyView);
 
         checkCategoryPreference();
 
-        initCompo();
+        initComponent();
         currentLocation();
 
         if (mListState) {
-            getFragmentManager().beginTransaction().hide(mMapFragment).commit();
+            getSupportFragmentManager().beginTransaction().hide(mMapFragment).commit();
         } else {
             mPoiList.setVisibility(View.INVISIBLE);
         }
@@ -128,6 +126,8 @@ public class BlocSpotActivity extends FragmentActivity
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_blocspot);
 //        setSupportActionBar(toolbar);
     } // end method onCreate
+
+
 
     @Override
     protected void onResume() {
@@ -150,61 +150,6 @@ public class BlocSpotActivity extends FragmentActivity
 
     private void addGeofences() {
         mCurrentGeofences = new ArrayList<Geofence>();
-
-        String longId;
-        String id = null;
-        int transType = 0;
-        Float radius = null;
-        Float lat = null;
-        Float lng = null;
-        Long expDur = null;
-
-        SharedPreferences sharedPreferences = getSharedPreferences(Constants.GEOFENCE_PREFS, Context.MODE_PRIVATE);
-        Map<String,?> keys = sharedPreferences.getAll();
-        int i = 0;
-        for (Map.Entry<String,?> entry : keys.entrySet()) {
-            if (i % 5 == 0) {
-                longId = entry.getKey();
-
-                if (longId.contains(Constants.KEY_TRANSITION_TYPE)) {
-                    transType = Integer.parseInt(entry.getValue().toString());
-                    Log.d("GEOTRANS", String.valueOf(transType));
-                } else if (longId.contains(Constants.KEY_RADIUS)) {
-                    radius = (Float) entry.getValue();
-                    Log.d("GEORADIUS", String.valueOf(radius));
-                } else if (longId.contains(Constants.KEY_LATITUDE)) {
-                    lat = (Float) entry.getValue();
-                    Log.d("GEOTLAT", String.valueOf(lat));
-                } else if (longId.contains(Constants.KEY_LONGITUDE)) {
-                    lng = (Float) entry.getValue();
-                    Log.d("GEOLNG", String.valueOf(lng));
-                } else if (longId.contains(Constants.KEY_EXPIRATION_DURATION)) {
-                    expDur = Long.parseLong(entry.getValue().toString());
-                    Log.d("GEODURATION", String.valueOf(expDur));
-                } else if (longId.contains(Constants.KEY_ID)) {
-                    id = entry.getValue().toString();
-                    Log.d("GEOID", id);
-                }
-            }
-
-            Log.d("map values", entry.getKey() + ": " + entry.getValue().toString());
-            i++;
-
-            if (i % 6 == 0) {
-                SimpleGeofence geofence = new SimpleGeofence(id, lat, lng, radius, expDur, transType);
-                mCurrentGeofences.add(geofence.toGeofence());
-                Log.e("We have here", id);
-                i = 0;
-                id = null;
-                transType = 0;
-                radius = null;
-                lat = null;
-                lng = null;
-                expDur = null;
-            }
-
-        }
-
 
         if (!servicesConnected()) {
             return;
@@ -281,7 +226,7 @@ public class BlocSpotActivity extends FragmentActivity
     private void checkCategoryPreference() {
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.MAIN_PREFS, Context.MODE_PRIVATE);
         String json = sharedPreferences.getString(Constants.CATEGORY_ARRAY, null);
-        Type type = new TypeToken<Category>(){}.getType();
+        Type type = new TypeToken<ArrayList<Category>>(){}.getType();
         ArrayList<Category> categories = new Gson().fromJson(json, type);
         if (categories == null) {
             categories = new ArrayList<Category>();
@@ -293,8 +238,6 @@ public class BlocSpotActivity extends FragmentActivity
             prefsEditor.apply();
         }
     }
-
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {}
@@ -353,7 +296,7 @@ public class BlocSpotActivity extends FragmentActivity
 
     @Override
     public void viewOnMap(String lat, String lng) {
-        getFragmentManager().beginTransaction().show(mMapFragment).commit();
+        getSupportFragmentManager().beginTransaction().show(mMapFragment).commit();
         mPoiList.setVisibility(View.INVISIBLE);
         mListState = false;
         this.invalidateOptionsMenu();
@@ -523,15 +466,21 @@ public class BlocSpotActivity extends FragmentActivity
         }
     } // end private class GetPlaces
 
-    private void initCompo() {
-        mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.f_map)).getMap();
-        mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            public boolean onMarkerClick(Marker marker) {
-                InfoWindowFragment fragment = new InfoWindowFragment(marker.getTitle(), BlocSpotActivity.this);
-                fragment.show(getFragmentManager(), "dialog");
-                return true;
+    private void initComponent() {
+        mMapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                mGoogleMap = googleMap;
+                mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    public boolean onMarkerClick(Marker marker) {
+                        InfoWindowFragment fragment = new InfoWindowFragment(marker.getTitle(), BlocSpotActivity.this);
+                        fragment.show(getFragmentManager(), "dialog");
+                        return true;
+                    }
+                });
             }
         });
+        //mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.f_map)).getMap();
     }
 
     @Override
@@ -550,11 +499,11 @@ public class BlocSpotActivity extends FragmentActivity
         int id = item.getItemId();
         if (id == R.id.action_switch) {
             if (mListState) {
-                getFragmentManager().beginTransaction().show(mMapFragment).commit();
+                getSupportFragmentManager().beginTransaction().show(mMapFragment).commit();
                 mPoiList.setVisibility(View.INVISIBLE);
                 mListState = false;
             } else {
-                getFragmentManager().beginTransaction().hide(mMapFragment).commit();
+                getSupportFragmentManager().beginTransaction().hide(mMapFragment).commit();
                 mPoiList.setVisibility(View.VISIBLE);
                 mListState = true;
             }
