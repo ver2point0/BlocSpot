@@ -1,35 +1,23 @@
 package com.ver2point0.android.blocspot.geofence;
 
 import android.app.IntentService;
-import android.content.Intent;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
+
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingEvent;
+import com.ver2point0.android.blocspot.R;
+import com.ver2point0.android.blocspot.ui.activity.BlocSpotActivity;
+
+import java.util.List;
 
 
 public class GeofenceIntentService extends IntentService {
-
-    private static final String ACTION_FOO = "com.ver2point0.android.blocspot.geofence.action.FOO";
-    private static final String ACTION_BAZ = "com.ver2point0.android.blocspot.geofence.action.BAZ";
-
-
-    private static final String EXTRA_PARAM1 = "com.ver2point0.android.blocspot.geofence.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "com.ver2point0.android.blocspot.geofence.extra.PARAM2";
-
-
-    public static void startActionFoo(Context context, String param1, String param2) {
-        Intent intent = new Intent(context, GeofenceIntentService.class);
-        intent.setAction(ACTION_FOO);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
-        context.startService(intent);
-    }
-
-    public static void startActionBaz(Context context, String param1, String param2) {
-        Intent intent = new Intent(context, GeofenceIntentService.class);
-        intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
-        context.startService(intent);
-    }
 
     public GeofenceIntentService() {
         super("GeofenceIntentService");
@@ -38,24 +26,39 @@ public class GeofenceIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            final String action = intent.getAction();
-            if (ACTION_FOO.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
-            } else if (ACTION_BAZ.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
+            GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+            int transition = geofencingEvent.getGeofenceTransition();
+            if (transition == Geofence.GEOFENCE_TRANSITION_ENTER) {
+                List<Geofence> geofenceList = geofencingEvent.getTriggeringGeofences();
+                Log.e("GEOFENCES", String.valueOf(geofenceList));
+                String[] geofenceIds = new String[geofenceList.size()];
+
+                for (int i = 0; i < geofenceIds.length; i++) {
+                    geofenceIds[i] = geofenceList.get(i).getRequestId();
+                }
+
+                sendNotification("");
             }
         }
     }
 
-    private void handleActionFoo(String param1, String param2) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+    private void sendNotification(String ids) {
+        Intent notificationIntent = new Intent(getApplicationContext(), BlocSpotActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(BlocSpotActivity.class);
+        stackBuilder.addNextIntent(notificationIntent);
 
-    private void handleActionBaz(String param1, String param2) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        PendingIntent notificationPendingIntent = stackBuilder
+                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle("content title")
+                .setContentText("content text")
+                .setContentIntent(notificationPendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(0, builder.build());
     }
 }

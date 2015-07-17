@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Criteria;
@@ -111,12 +112,18 @@ public class BlocSpotActivity extends AppCompatActivity
 
         checkCategoryPreference();
 
+        // geofence
         mGoogleApiClient = null;
         mPendingIntent = null;
         mInProgress = false;
 
-        initComponent();
-        currentLocation();
+        mGeoIds = new ArrayList<String>();
+        mGeofenceStore = new SimpleGeofenceStore(this);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
 
         if (mListState) {
             getSupportFragmentManager().beginTransaction().hide(mMapFragment).commit();
@@ -128,12 +135,25 @@ public class BlocSpotActivity extends AppCompatActivity
 //        setSupportActionBar(toolbar);
     } // end method onCreate
 
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        initComponent();
+        currentLocation();
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
         applyFilters(mFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
     @Override
@@ -152,20 +172,15 @@ public class BlocSpotActivity extends AppCompatActivity
     private void beginAddGeofences(ArrayList<String> geoIds) {
         mCurrentGeofences = new ArrayList<Geofence>();
 
-        for (String id : geoIds) {
-            mCurrentGeofences.add(mGeofenceStore.getGeofence(id).toGeofence());
+        if (geoIds.size() > 0) {
+            for (String id : geoIds) {
+                mCurrentGeofences.add(mGeofenceStore.getGeofence(id).toGeofence());
+            }
         }
-
 
         if (!servicesConnected()) {
             return;
         }
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
 
         if (!mInProgress) {
             mInProgress = true;
@@ -221,7 +236,10 @@ public class BlocSpotActivity extends AppCompatActivity
     }
 
     @Override
-    public void onConnectionSuspended(int i) {}
+    public void onConnectionSuspended(int i) {
+        mInProgress = false;
+        mGoogleApiClient = null;
+    }
 
     @Override
     public void onLocationChanged(Location location) {}
@@ -236,7 +254,26 @@ public class BlocSpotActivity extends AppCompatActivity
     public void onProviderDisabled(String provider) {}
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {}
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        mInProgress = false;
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(
+                        this, Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (IntentSender.SendIntentException e) {
+                Log.e("ConnectionFailed", String.valueOf(e));
+            }
+        } else {
+            int errorCode = connectionResult.getErrorCode();
+            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
+                    errorCode, this, Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            if (errorDialog != null) {
+                ErrorDialogFragment errorFragment = new ErrorDialogFragment();
+                errorFragment.setDialog(errorDialog);
+                errorFragment.show(getFragmentManager(), "Geofence Detection");
+            }
+        }
+    }
 
 
     private void checkCategoryPreference() {
