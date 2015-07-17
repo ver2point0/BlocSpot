@@ -27,6 +27,8 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -45,8 +47,8 @@ import com.ver2point0.android.blocspot.R;
 import com.ver2point0.android.blocspot.adapter.PoiListAdapter;
 import com.ver2point0.android.blocspot.category.Category;
 import com.ver2point0.android.blocspot.database.table.PoiTable;
-import com.ver2point0.android.blocspot.geofence.EditGeofences;
 import com.ver2point0.android.blocspot.geofence.GeofenceIntentService;
+import com.ver2point0.android.blocspot.geofence.SimpleGeofenceStore;
 import com.ver2point0.android.blocspot.ui.fragment.ChangeCategoryFragment;
 import com.ver2point0.android.blocspot.ui.fragment.EditNoteFragment;
 import com.ver2point0.android.blocspot.ui.fragment.FilterDialogFragment;
@@ -78,9 +80,10 @@ public class BlocSpotActivity extends AppCompatActivity
     private boolean mInProgress;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private EditGeofences mEditGeofences;
     private PendingIntent mPendingIntent;
     private ArrayList<Geofence> mCurrentGeofences;
+    private ArrayList<String> mGeoIds;
+    private SimpleGeofenceStore mGeofenceStore;
 
 
     @Override
@@ -108,6 +111,10 @@ public class BlocSpotActivity extends AppCompatActivity
 
         checkCategoryPreference();
 
+        mGoogleApiClient = null;
+        mPendingIntent = null;
+        mInProgress = false;
+
         initComponent();
         currentLocation();
 
@@ -116,12 +123,6 @@ public class BlocSpotActivity extends AppCompatActivity
         } else {
             mPoiList.setVisibility(View.INVISIBLE);
         }
-
-        mEditGeofences = new EditGeofences(this);
-        mGoogleApiClient = null;
-        mPendingIntent = null;
-        mInProgress = false;
-        addGeofences();
 
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_blocspot);
 //        setSupportActionBar(toolbar);
@@ -142,14 +143,19 @@ public class BlocSpotActivity extends AppCompatActivity
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         mInProgress = false;
-                        addGeofences();
+                        beginAddGeofences(mGeoIds);
                         break;
                 }
         }
     }
 
-    private void addGeofences() {
+    private void beginAddGeofences(ArrayList<String> geoIds) {
         mCurrentGeofences = new ArrayList<Geofence>();
+
+        for (String id : geoIds) {
+            mCurrentGeofences.add(mGeofenceStore.getGeofence(id).toGeofence());
+        }
+
 
         if (!servicesConnected()) {
             return;
@@ -167,10 +173,6 @@ public class BlocSpotActivity extends AppCompatActivity
         } else {
 
         }
-    }
-
-    private void continueAddGeofences() {
-        mPendingIntent = getTransitionPendingIntent();
     }
 
     private boolean servicesConnected() {
@@ -201,7 +203,21 @@ public class BlocSpotActivity extends AppCompatActivity
 //        mLocationRequest.setInterval(1000); // Update location every second
 //        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,
 //                (com.google.android.gms.location.LocationListener) this);
-        continueAddGeofences();
+        mPendingIntent = getTransitionPendingIntent();
+        LocationServices.GeofencingApi
+                .addGeofences(mGoogleApiClient, mCurrentGeofences, mPendingIntent)
+                .setResultCallback(new ResultCallback<Status>(){
+                    @Override
+                    public void onResult(Status status) {
+                        if (status.isSuccess()) {
+
+                        } else {
+
+                        }
+                        mInProgress = false;
+                        mGoogleApiClient.disconnect();
+                    }
+                });
     }
 
     @Override
@@ -429,6 +445,7 @@ public class BlocSpotActivity extends AppCompatActivity
                                 cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE))))
                         .icon(BitmapDescriptorFactory
                                 .defaultMarker(getMarkerColor(c))));
+                mGeoIds.add(c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_GEO_ID)));
             }
 
             CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -437,7 +454,8 @@ public class BlocSpotActivity extends AppCompatActivity
                     .tilt(0)
                     .build();
             mGoogleMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
+                    .newCameraPosition(cameraPosition));
+            beginAddGeofences(mGeoIds);
         } // end method onPostExecute()
 
         private float getMarkerColor(Cursor c) {
