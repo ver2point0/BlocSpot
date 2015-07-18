@@ -120,16 +120,11 @@ public class SavePoiDialogFragment extends DialogFragment {
                     public void run() {
                         super.run();
                         mPoiTable.addNewPoi(name, lat, lng, catName, catColor, id);
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(mContext, mContext.getString(R.string.toast_poi_saved),
-                                        Toast.LENGTH_LONG).show();
-                                ((SearchActivity) mContext).returnToMain();
-                            }
-                        });
                     }
                 }.start();
+                Toast.makeText(mContext, mContext.getString(R.string.toast_poi_saved),
+                        Toast.LENGTH_LONG).show();
+                ((SearchActivity) mContext).returnToMain();
                 dismiss();
             }
         });

@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Criteria;
@@ -15,7 +16,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,13 +28,15 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -45,9 +48,8 @@ import com.ver2point0.android.blocspot.R;
 import com.ver2point0.android.blocspot.adapter.PoiListAdapter;
 import com.ver2point0.android.blocspot.category.Category;
 import com.ver2point0.android.blocspot.database.table.PoiTable;
-import com.ver2point0.android.blocspot.geofence.EditGeofences;
 import com.ver2point0.android.blocspot.geofence.GeofenceIntentService;
-import com.ver2point0.android.blocspot.geofence.SimpleGeofence;
+import com.ver2point0.android.blocspot.geofence.SimpleGeofenceStore;
 import com.ver2point0.android.blocspot.ui.fragment.ChangeCategoryFragment;
 import com.ver2point0.android.blocspot.ui.fragment.EditNoteFragment;
 import com.ver2point0.android.blocspot.ui.fragment.FilterDialogFragment;
@@ -57,10 +59,9 @@ import com.ver2point0.android.blocspot.util.Utils;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Map;
 
 
-public class BlocSpotActivity extends FragmentActivity
+public class BlocSpotActivity extends AppCompatActivity
         implements OnMapReadyCallback, FilterDialogFragment.OnFilterListener,
         EditNoteFragment.OnNoteUpdateListener, PoiListAdapter.OnPoiListAdapterListener,
         ChangeCategoryFragment.OnChangeCategoryListener, GoogleApiClient.ConnectionCallbacks,
@@ -73,16 +74,16 @@ public class BlocSpotActivity extends FragmentActivity
     private boolean mListState = true;
     private ListView mPoiList;
     private PoiTable mPoiTable = new PoiTable();
-    private MapFragment mMapFragment;
+    private SupportMapFragment mMapFragment;
     private String mFilter;
     private InfoWindowFragment mInfoWindowFragment;
-    private PendingIntent mGeofenceRequestIntent;
     private boolean mInProgress;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private EditGeofences mEditGeofences;
     private PendingIntent mPendingIntent;
     private ArrayList<Geofence> mCurrentGeofences;
+    private ArrayList<String> mGeoIds;
+    private SimpleGeofenceStore mGeofenceStore;
 
 
     @Override
@@ -103,36 +104,55 @@ public class BlocSpotActivity extends FragmentActivity
 
         Utils.setContext(this);
 
-        mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.f_map);
+        mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.f_map);
         mPoiList = (ListView) findViewById(R.id.lv_list);
         TextView emptyView = (TextView) findViewById(R.id.tv_empty_list_view);
         mPoiList.setEmptyView(emptyView);
 
         checkCategoryPreference();
 
-        initCompo();
-        currentLocation();
-
-        if (mListState) {
-            getFragmentManager().beginTransaction().hide(mMapFragment).commit();
-        } else {
-            mPoiList.setVisibility(View.INVISIBLE);
-        }
-
-        mEditGeofences = new EditGeofences(this);
+        // geofence
         mGoogleApiClient = null;
         mPendingIntent = null;
         mInProgress = false;
-        addGeofences();
+
+        mGeoIds = new ArrayList<String>();
+        mGeofenceStore = new SimpleGeofenceStore(this);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        if (mListState) {
+            getSupportFragmentManager().beginTransaction().hide(mMapFragment).commit();
+        } else {
+            mPoiList.setVisibility(View.INVISIBLE);
+        }
 
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_blocspot);
 //        setSupportActionBar(toolbar);
     } // end method onCreate
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        initComponent();
+        currentLocation();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         applyFilters(mFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
     @Override
@@ -142,79 +162,24 @@ public class BlocSpotActivity extends FragmentActivity
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         mInProgress = false;
-                        addGeofences();
+                        beginAddGeofences(mGeoIds);
                         break;
                 }
         }
     }
 
-    private void addGeofences() {
+    private void beginAddGeofences(ArrayList<String> geoIds) {
         mCurrentGeofences = new ArrayList<Geofence>();
 
-        String longId;
-        String id = null;
-        int transType = 0;
-        Float radius = null;
-        Float lat = null;
-        Float lng = null;
-        Long expDur = null;
-
-        SharedPreferences sharedPreferences = getSharedPreferences(Constants.GEOFENCE_PREFS, Context.MODE_PRIVATE);
-        Map<String,?> keys = sharedPreferences.getAll();
-        int i = 0;
-        for (Map.Entry<String,?> entry : keys.entrySet()) {
-            if (i % 5 == 0) {
-                longId = entry.getKey();
-
-                if (longId.contains(Constants.KEY_TRANSITION_TYPE)) {
-                    transType = Integer.parseInt(entry.getValue().toString());
-                    Log.d("GEOTRANS", String.valueOf(transType));
-                } else if (longId.contains(Constants.KEY_RADIUS)) {
-                    radius = (Float) entry.getValue();
-                    Log.d("GEORADIUS", String.valueOf(radius));
-                } else if (longId.contains(Constants.KEY_LATITUDE)) {
-                    lat = (Float) entry.getValue();
-                    Log.d("GEOTLAT", String.valueOf(lat));
-                } else if (longId.contains(Constants.KEY_LONGITUDE)) {
-                    lng = (Float) entry.getValue();
-                    Log.d("GEOLNG", String.valueOf(lng));
-                } else if (longId.contains(Constants.KEY_EXPIRATION_DURATION)) {
-                    expDur = Long.parseLong(entry.getValue().toString());
-                    Log.d("GEODURATION", String.valueOf(expDur));
-                } else if (longId.contains(Constants.KEY_ID)) {
-                    id = entry.getValue().toString();
-                    Log.d("GEOID", id);
-                }
+        if (geoIds.size() > 0) {
+            for (String id : geoIds) {
+                mCurrentGeofences.add(mGeofenceStore.getGeofence(id).toGeofence());
             }
-
-            Log.d("map values", entry.getKey() + ": " + entry.getValue().toString());
-            i++;
-
-            if (i % 6 == 0) {
-                SimpleGeofence geofence = new SimpleGeofence(id, lat, lng, radius, expDur, transType);
-                mCurrentGeofences.add(geofence.toGeofence());
-                Log.e("We have here", id);
-                i = 0;
-                id = null;
-                transType = 0;
-                radius = null;
-                lat = null;
-                lng = null;
-                expDur = null;
-            }
-
         }
-
 
         if (!servicesConnected()) {
             return;
         }
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
 
         if (!mInProgress) {
             mInProgress = true;
@@ -222,10 +187,6 @@ public class BlocSpotActivity extends FragmentActivity
         } else {
 
         }
-    }
-
-    private void continueAddGeofences() {
-        mPendingIntent = getTransitionPendingIntent();
     }
 
     private boolean servicesConnected() {
@@ -256,11 +217,28 @@ public class BlocSpotActivity extends FragmentActivity
 //        mLocationRequest.setInterval(1000); // Update location every second
 //        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,
 //                (com.google.android.gms.location.LocationListener) this);
-        continueAddGeofences();
+        mPendingIntent = getTransitionPendingIntent();
+        LocationServices.GeofencingApi
+                .addGeofences(mGoogleApiClient, mCurrentGeofences, mPendingIntent)
+                .setResultCallback(new ResultCallback<Status>(){
+                    @Override
+                    public void onResult(Status status) {
+                        if (status.isSuccess()) {
+
+                        } else {
+
+                        }
+                        mInProgress = false;
+                        mGoogleApiClient.disconnect();
+                    }
+                });
     }
 
     @Override
-    public void onConnectionSuspended(int i) {}
+    public void onConnectionSuspended(int i) {
+        mInProgress = false;
+        mGoogleApiClient = null;
+    }
 
     @Override
     public void onLocationChanged(Location location) {}
@@ -275,13 +253,32 @@ public class BlocSpotActivity extends FragmentActivity
     public void onProviderDisabled(String provider) {}
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {}
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        mInProgress = false;
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(
+                        this, Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (IntentSender.SendIntentException e) {
+                Log.e("ConnectionFailed", String.valueOf(e));
+            }
+        } else {
+            int errorCode = connectionResult.getErrorCode();
+            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
+                    errorCode, this, Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            if (errorDialog != null) {
+                ErrorDialogFragment errorFragment = new ErrorDialogFragment();
+                errorFragment.setDialog(errorDialog);
+                errorFragment.show(getFragmentManager(), "Geofence Detection");
+            }
+        }
+    }
 
 
     private void checkCategoryPreference() {
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.MAIN_PREFS, Context.MODE_PRIVATE);
         String json = sharedPreferences.getString(Constants.CATEGORY_ARRAY, null);
-        Type type = new TypeToken<Category>(){}.getType();
+        Type type = new TypeToken<ArrayList<Category>>(){}.getType();
         ArrayList<Category> categories = new Gson().fromJson(json, type);
         if (categories == null) {
             categories = new ArrayList<Category>();
@@ -293,8 +290,6 @@ public class BlocSpotActivity extends FragmentActivity
             prefsEditor.apply();
         }
     }
-
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {}
@@ -317,7 +312,6 @@ public class BlocSpotActivity extends FragmentActivity
                     public void run() {
                         Toast.makeText(BlocSpotActivity.this, getString(R.string.toast_poi_updated),
                                 Toast.LENGTH_LONG).show();
-                        new GetPlaces(BlocSpotActivity.this, mFilter).execute();
                         refreshList(id);
                     }
                 });
@@ -338,7 +332,6 @@ public class BlocSpotActivity extends FragmentActivity
             public void run() {
                 super.run();
                 mPoiTable.updateVisited(id, visited);
-                Log.e("ERROR", String.valueOf(visited));
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -353,7 +346,7 @@ public class BlocSpotActivity extends FragmentActivity
 
     @Override
     public void viewOnMap(String lat, String lng) {
-        getFragmentManager().beginTransaction().show(mMapFragment).commit();
+        getSupportFragmentManager().beginTransaction().show(mMapFragment).commit();
         mPoiList.setVisibility(View.INVISIBLE);
         mListState = false;
         this.invalidateOptionsMenu();
@@ -370,7 +363,7 @@ public class BlocSpotActivity extends FragmentActivity
     }
 
     @Override
-    public void deletePoi(final String id) {
+    public void deletePoi(final String id, final String geoId) {
         new Thread() {
             @Override
             public void run() {
@@ -379,9 +372,9 @@ public class BlocSpotActivity extends FragmentActivity
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(BlocSpotActivity.this, "POI Deleted!",
+                        Toast.makeText(BlocSpotActivity.this, getString(R.string.toast_delete_poi),
                                 Toast.LENGTH_LONG).show();
-                        new GetPlaces(BlocSpotActivity.this, mFilter).execute();
+                        mGeofenceStore.removeGeofence(geoId);
                         refreshList(id);
                     }
                 });
@@ -411,7 +404,9 @@ public class BlocSpotActivity extends FragmentActivity
     @Override
     public void refreshList(String id) {
         new GetPlaces(BlocSpotActivity.this, mFilter).execute();
-        mInfoWindowFragment.refreshInfoWindow(id);
+        if (mInfoWindowFragment != null) {
+            mInfoWindowFragment.refreshInfoWindow(id);
+        }
     }
 
     private class GetPlaces extends AsyncTask<Void, Void, Cursor> {
@@ -424,6 +419,7 @@ public class BlocSpotActivity extends FragmentActivity
         public GetPlaces(Context context, String filter) {
             this.context = context;
             this.filter = filter;
+            mGeoIds.clear();
         }
 
         @Override
@@ -435,9 +431,8 @@ public class BlocSpotActivity extends FragmentActivity
                 dialog.setMessage(getString(R.string.loading_message));
                 dialog.isIndeterminate();
                 dialog.show();
-            } catch (Exception e){
-//                dialog.dismiss();
-                Log.e("ERROR_PRE", String.valueOf(e));
+            } catch (Exception ignored){
+
             }
         } // end method onPreExecute()
 
@@ -450,9 +445,8 @@ public class BlocSpotActivity extends FragmentActivity
                 } else {
                     cursor = mPoiTable.poiQuery();
                 }
-            } catch (Exception e) {
-                ex = e;
-                Log.e("ERROR_DO", String.valueOf(ex));
+            } catch (Exception ignored) {
+
             }
             return cursor;
         } // end method doInBackground()
@@ -461,7 +455,6 @@ public class BlocSpotActivity extends FragmentActivity
         protected void onPostExecute(Cursor cursor) {
             super.onPostExecute(cursor);
             if (ex != null) {
-                Log.e("ERROR_POST", String.valueOf(ex));
                 dialog.dismiss();
             }
 
@@ -482,10 +475,12 @@ public class BlocSpotActivity extends FragmentActivity
                 c = ((Cursor) adapter.getItem(i));
                 mGoogleMap.addMarker(new MarkerOptions()
                         .title(cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_ID)))
+                        .snippet(c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_GEO_ID)))
                         .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE)),
                                 cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE))))
                         .icon(BitmapDescriptorFactory
                                 .defaultMarker(getMarkerColor(c))));
+                mGeoIds.add(c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_GEO_ID)));
             }
 
             CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -494,7 +489,8 @@ public class BlocSpotActivity extends FragmentActivity
                     .tilt(0)
                     .build();
             mGoogleMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
+                    .newCameraPosition(cameraPosition));
+            beginAddGeofences(mGeoIds);
         } // end method onPostExecute()
 
         private float getMarkerColor(Cursor c) {
@@ -523,15 +519,22 @@ public class BlocSpotActivity extends FragmentActivity
         }
     } // end private class GetPlaces
 
-    private void initCompo() {
-        mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.f_map)).getMap();
-        mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            public boolean onMarkerClick(Marker marker) {
-                InfoWindowFragment fragment = new InfoWindowFragment(marker.getTitle(), BlocSpotActivity.this);
-                fragment.show(getFragmentManager(), "dialog");
-                return true;
+    private void initComponent() {
+        mMapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                mGoogleMap = googleMap;
+                mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    public boolean onMarkerClick(Marker marker) {
+                        InfoWindowFragment fragment = new InfoWindowFragment(marker.getTitle(),
+                                marker.getSnippet(), BlocSpotActivity.this);
+                        fragment.show(getFragmentManager(), "dialog");
+                        return true;
+                    }
+                });
             }
         });
+        //mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.f_map)).getMap();
     }
 
     @Override
@@ -550,11 +553,11 @@ public class BlocSpotActivity extends FragmentActivity
         int id = item.getItemId();
         if (id == R.id.action_switch) {
             if (mListState) {
-                getFragmentManager().beginTransaction().show(mMapFragment).commit();
+                getSupportFragmentManager().beginTransaction().show(mMapFragment).commit();
                 mPoiList.setVisibility(View.INVISIBLE);
                 mListState = false;
             } else {
-                getFragmentManager().beginTransaction().hide(mMapFragment).commit();
+                getSupportFragmentManager().beginTransaction().hide(mMapFragment).commit();
                 mPoiList.setVisibility(View.VISIBLE);
                 mListState = true;
             }

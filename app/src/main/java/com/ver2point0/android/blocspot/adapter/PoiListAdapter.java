@@ -32,6 +32,7 @@ public class PoiListAdapter extends CursorAdapter {
     private String mLat;
     private String mLng;
     private String mName;
+    private String mGeoId;
 
     public PoiListAdapter(Context context, Cursor cursor, Location location) {
         super(context, cursor);
@@ -55,6 +56,7 @@ public class PoiListAdapter extends CursorAdapter {
         holder.visited = (TextView) rootView.findViewById(R.id.tv_id_visited_holder);
         holder.lat = (TextView) rootView.findViewById(R.id.tv_lat_holder);
         holder.lng = (TextView) rootView.findViewById(R.id.tv_lng_holder);
+        holder.geoId = (TextView) rootView.findViewById(R.id.tv_geo_holder);
         rootView.setTag(holder);
         return rootView;
     }
@@ -70,6 +72,7 @@ public class PoiListAdapter extends CursorAdapter {
         Double lat = cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE));
         Double lng = cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE));
         String color = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_CAT_COLOR));
+        String geoId = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_GEO_ID));
 
         holder.name.setText(name);
         if(note != null) {
@@ -78,6 +81,7 @@ public class PoiListAdapter extends CursorAdapter {
         holder.id.setText(id);
         holder.lat.setText(String.valueOf(lat));
         holder.lng.setText(String.valueOf(lng));
+        holder.geoId.setText(geoId);
 
         Location placeLoc = new Location("");
         placeLoc.setLatitude(lat);
@@ -113,6 +117,8 @@ public class PoiListAdapter extends CursorAdapter {
                 mId = holder.id.getText().toString();
                 mLat = holder.lat.getText().toString();
                 mLng = holder.lng.getText().toString();
+                mGeoId = holder.geoId.getText().toString();
+
                 String tf = holder.visited.getText().toString();
                 if (tf.equals(Constants.TRUE)) {
                     mVisited = true;
@@ -143,7 +149,7 @@ public class PoiListAdapter extends CursorAdapter {
                         ((BlocSpotActivity) mContext).shareLocation(mName, mLat, mLng);
                         break;
                     case 5:
-                        ((BlocSpotActivity) mContext).deletePoi(mId);
+                        ((BlocSpotActivity) mContext).deletePoi(mId, mGeoId);
                         break;
                 }
                 return false;
@@ -162,13 +168,14 @@ public class PoiListAdapter extends CursorAdapter {
         TextView visited;
         TextView lat;
         TextView lng;
+        TextView geoId;
     }
 
     public interface OnPoiListAdapterListener {
         public void editNoteDialog(String id, String note);
         public void editVisited(String id, Boolean visited);
         public void viewOnMap(String lat, String lng);
-        public void deletePoi(String id);
+        public void deletePoi(String id, String geoId);
         public void changeCategory(String id);
         public void shareLocation(String name, String lat, String lng);
     }
