@@ -37,6 +37,7 @@
     <string name="intent_share_poi">Share POI</string>
     <string name="toast_delete_poi">POI Deleted</string>
     <string name="notification_poi">You are near your POI!</string>
+    <string name="toast_geofences_failed">Failed to Add Geofences</string>
 
     <string name="empty_poi_list">You have not selected any Points of Interest!
         \nClick the search button above to begin.</string>
