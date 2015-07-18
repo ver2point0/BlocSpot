@@ -34,14 +34,16 @@ public class InfoWindowFragment extends DialogFragment {
     private String mLat;
     private String mLng;
     private String mNote;
+    private String mGeoId;
 
     public InfoWindowFragment() {
         // Required empty public constructor
     }
 
-    public InfoWindowFragment(String id, Context context) {
+    public InfoWindowFragment(String id, String geoId, Context context) {
         mId = id;
         mContext = context;
+        mGeoId = geoId;
     }
 
     @Override
@@ -74,12 +76,12 @@ public class InfoWindowFragment extends DialogFragment {
         deletePoiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((BlocSpotActivity) mContext).deletePoi(mId);
+                ((BlocSpotActivity) mContext).deletePoi(mId, mGeoId);
             }
         });
 
         ImageButton sharePoiButton = (ImageButton) rootView.findViewById(R.id.ib_share);
-        deletePoiButton.setOnClickListener(new View.OnClickListener() {
+        sharePoiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ((BlocSpotActivity) mContext).shareLocation(mName, mLat, mLng);
@@ -87,7 +89,7 @@ public class InfoWindowFragment extends DialogFragment {
         });
 
         ImageButton editNoteButton = (ImageButton) rootView.findViewById(R.id.ib_note);
-        deletePoiButton.setOnClickListener(new View.OnClickListener() {
+        editNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ((BlocSpotActivity) mContext).editNoteDialog(mId, mNote);

@@ -77,7 +77,6 @@ public class BlocSpotActivity extends AppCompatActivity
     private SupportMapFragment mMapFragment;
     private String mFilter;
     private InfoWindowFragment mInfoWindowFragment;
-    private PendingIntent mGeofenceRequestIntent;
     private boolean mInProgress;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -313,7 +312,6 @@ public class BlocSpotActivity extends AppCompatActivity
                     public void run() {
                         Toast.makeText(BlocSpotActivity.this, getString(R.string.toast_poi_updated),
                                 Toast.LENGTH_LONG).show();
-                        new GetPlaces(BlocSpotActivity.this, mFilter).execute();
                         refreshList(id);
                     }
                 });
@@ -334,7 +332,6 @@ public class BlocSpotActivity extends AppCompatActivity
             public void run() {
                 super.run();
                 mPoiTable.updateVisited(id, visited);
-                Log.e("ERROR", String.valueOf(visited));
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -366,7 +363,7 @@ public class BlocSpotActivity extends AppCompatActivity
     }
 
     @Override
-    public void deletePoi(final String id) {
+    public void deletePoi(final String id, final String geoId) {
         new Thread() {
             @Override
             public void run() {
@@ -375,9 +372,9 @@ public class BlocSpotActivity extends AppCompatActivity
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(BlocSpotActivity.this, "POI Deleted!",
+                        Toast.makeText(BlocSpotActivity.this, getString(R.string.toast_delete_poi),
                                 Toast.LENGTH_LONG).show();
-                        new GetPlaces(BlocSpotActivity.this, mFilter).execute();
+                        mGeofenceStore.removeGeofence(geoId);
                         refreshList(id);
                     }
                 });
@@ -407,7 +404,9 @@ public class BlocSpotActivity extends AppCompatActivity
     @Override
     public void refreshList(String id) {
         new GetPlaces(BlocSpotActivity.this, mFilter).execute();
-        mInfoWindowFragment.refreshInfoWindow(id);
+        if (mInfoWindowFragment != null) {
+            mInfoWindowFragment.refreshInfoWindow(id);
+        }
     }
 
     private class GetPlaces extends AsyncTask<Void, Void, Cursor> {
@@ -420,6 +419,7 @@ public class BlocSpotActivity extends AppCompatActivity
         public GetPlaces(Context context, String filter) {
             this.context = context;
             this.filter = filter;
+            mGeoIds.clear();
         }
 
         @Override
@@ -431,9 +431,8 @@ public class BlocSpotActivity extends AppCompatActivity
                 dialog.setMessage(getString(R.string.loading_message));
                 dialog.isIndeterminate();
                 dialog.show();
-            } catch (Exception e){
-//                dialog.dismiss();
-                Log.e("ERROR_PRE", String.valueOf(e));
+            } catch (Exception ignored){
+
             }
         } // end method onPreExecute()
 
@@ -446,9 +445,8 @@ public class BlocSpotActivity extends AppCompatActivity
                 } else {
                     cursor = mPoiTable.poiQuery();
                 }
-            } catch (Exception e) {
-                ex = e;
-                Log.e("ERROR_DO", String.valueOf(ex));
+            } catch (Exception ignored) {
+
             }
             return cursor;
         } // end method doInBackground()
@@ -457,7 +455,6 @@ public class BlocSpotActivity extends AppCompatActivity
         protected void onPostExecute(Cursor cursor) {
             super.onPostExecute(cursor);
             if (ex != null) {
-                Log.e("ERROR_POST", String.valueOf(ex));
                 dialog.dismiss();
             }
 
@@ -478,6 +475,7 @@ public class BlocSpotActivity extends AppCompatActivity
                 c = ((Cursor) adapter.getItem(i));
                 mGoogleMap.addMarker(new MarkerOptions()
                         .title(cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_ID)))
+                        .snippet(c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_GEO_ID)))
                         .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE)),
                                 cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE))))
                         .icon(BitmapDescriptorFactory
@@ -528,7 +526,8 @@ public class BlocSpotActivity extends AppCompatActivity
                 mGoogleMap = googleMap;
                 mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     public boolean onMarkerClick(Marker marker) {
-                        InfoWindowFragment fragment = new InfoWindowFragment(marker.getTitle(), BlocSpotActivity.this);
+                        InfoWindowFragment fragment = new InfoWindowFragment(marker.getTitle(),
+                                marker.getSnippet(), BlocSpotActivity.this);
                         fragment.show(getFragmentManager(), "dialog");
                         return true;
                     }

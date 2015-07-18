@@ -8,8 +8,11 @@ public class Constants {
     public static final String FILTER_TEXT = "filterText";
     public static final String EDIT_NOTE_TEXT = "editNoteText";
 
+    public static final String KEY_GEO_IDS = "geoIds";
+
     public static final String MAIN_PREFS = "mainPrefs";
     public static final String GEOFENCE_PREFS = "geofencePrefs";
+    public static final String NOTIFICATION_PREFS = "notificationPrefs";
     public static final String CATEGORY_ARRAY = "categoryArray";
 
     public static final String KEY_ID = "com.example.android.geofence.KEY_ID";
@@ -30,7 +33,7 @@ public class Constants {
     public static final String API_KEY = "AIzaSyBAUmIqphWvpc_YppTWRAfnCR_bno27ny4";
 
     public static final String DATABASE_NAME = "GoPlaces";
-    public static final int DATABASE_VERSION = 14;
+    public static final int DATABASE_VERSION = 15;
 
     public static final String TABLE_POI_NAME = "poiTable";
     public static final String TABLE_COLUMN_ID = "_id";
@@ -79,5 +82,7 @@ public class Constants {
     public static final String TRUE = "true";
     public static final String FALSE = "false";
     public static final String INTENT_TYPE_TEXT_PLAIN = "text/plain";
+
+    public static final long TWENTY_MINUTES = 1200000;
 
 }
