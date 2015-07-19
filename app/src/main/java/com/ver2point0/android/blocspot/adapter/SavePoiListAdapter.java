@@ -43,7 +43,7 @@ public class SavePoiListAdapter extends ArrayAdapter<Category> implements Checka
             convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_save_poi, null);
             holder = new ViewHolder();
             holder.categoryText = (TextView) convertView.findViewById(R.id.tv_category_text);
-            holder.background = (RelativeLayout) convertView.findViewById(R.id.layoutBackground);
+            holder.background = (RelativeLayout) convertView.findViewById(R.id.rl_layoutBackground);
             convertView.setTag(holder);
         } else {
            holder = (ViewHolder) convertView.getTag();

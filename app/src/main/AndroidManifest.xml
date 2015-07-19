@@ -60,11 +60,6 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity
-            android:name="com.ver2point0.android.blocspot.adapter.PlacesSearchItemAdapter"
-            android:label="@string/title_activity_places_search_item_adapter">
-        </activity>
-
         <service
             android:name=".geofence.GeofenceIntentService"
             android:exported="false">
