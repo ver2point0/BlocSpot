@@ -1,6 +1,7 @@
 package com.ver2point0.android.blocspot.geofence;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -68,7 +69,7 @@ public class GeofenceIntentService extends IntentService {
     }
 
     private void sendNotification(String geoName, int i) {
-        if (System.currentTimeMillis() - mSharedPreferences.getLong(geoName, 0) > 10
+        if (System.currentTimeMillis() - mSharedPreferences.getLong(geoName, 0) > Constants.TWENTY_MINUTES
                 || mSharedPreferences.getLong(geoName, 0) == 0) {
             mEditor.putLong(geoName, System.currentTimeMillis());
             mEditor.commit();
@@ -85,6 +86,7 @@ public class GeofenceIntentService extends IntentService {
             builder.setSmallIcon(R.drawable.ic_launcher)
                     .setContentTitle(geoName)
                     .setAutoCancel(true)
+                    .setDefaults(Notification.DEFAULT_ALL)
                     .setContentText(getString(R.string.notification_poi))
                     .setContentIntent(notificationPendingIntent);
 

@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:name=".BlocSpotApplication"
@@ -51,11 +52,6 @@
                 android:resource="@xml/searchable"/>
         </activity>
 
-        <activity
-            android:name="com.ver2point0.android.blocspot.adapter.PlacesSearchItemAdapter"
-            android:label="@string/title_activity_places_search_item_adapter">
-        </activity>
-
         <!-- Meta data -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
@@ -64,6 +60,16 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name="com.ver2point0.android.blocspot.adapter.PlacesSearchItemAdapter"
+            android:label="@string/title_activity_places_search_item_adapter">
+        </activity>
+
+        <service
+            android:name=".geofence.GeofenceIntentService"
+            android:exported="false">
+        </service>
 
     </application>
 </manifest>

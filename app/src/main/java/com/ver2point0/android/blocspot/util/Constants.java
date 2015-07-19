@@ -26,8 +26,10 @@ public class Constants {
     public static final long INVALID_LONG_VALUE = -9991;
     public static final float INVALID_FLOAT_VALUE = -999.0f;
     public static final int INVALID_INT_VALUE = -999;
-    public static final float GEOFENCE_RADIUS = 160.934f;
+    public static final float GEOFENCE_RADIUS = 402.335f;
     public static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    public static final long TWENTY_MINUTES = 1200000;
+
     public static final String APPTAG = "Geofence Detection";
 
     public static final String API_KEY = "AIzaSyBAUmIqphWvpc_YppTWRAfnCR_bno27ny4";
@@ -83,6 +85,7 @@ public class Constants {
     public static final String FALSE = "false";
     public static final String INTENT_TYPE_TEXT_PLAIN = "text/plain";
 
-    public static final long TWENTY_MINUTES = 1200000;
+    public static final String NETWORK_WIFI = "WIFI";
+    public static final String NETWORK_MOBILE = "MOBILE";
 
 }

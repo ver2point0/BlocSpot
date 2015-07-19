@@ -42,6 +42,8 @@
     <string name="dialog_message_no_network">No Network Found. Please connect
     to a network before using Go Places.</string>
     <string name="dialog_positive_button_ok">OK</string>
+    <string name="toast_no_gps">No GPS Signal</string>
+    <string name="toast_no_network">No Network Connection</string>
 
     <string name="empty_poi_list">You have not selected any Points of Interest!
         \nClick the search button above to begin.</string>

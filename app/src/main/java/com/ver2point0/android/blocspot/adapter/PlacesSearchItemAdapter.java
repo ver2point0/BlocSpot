@@ -73,7 +73,7 @@ public class PlacesSearchItemAdapter extends ArrayAdapter<Place> {
 
         if (mPoiTable != null && name != null) {
             Cursor cursor = mPoiTable.poiCheck(name);
-            if (cursor.moveToFirst() && cursor.getCount() >= 1) {
+            if (cursor.moveToFirst() && cursor.getCount() >= 1 && cursor != null) {
                 String color = cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_CAT_COLOR));
                 holder.colorLabel.setVisibility(View.VISIBLE);
                 Utils.setColorString(color, holder.colorLabel);

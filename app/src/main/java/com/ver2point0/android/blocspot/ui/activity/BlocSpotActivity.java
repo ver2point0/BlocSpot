@@ -94,13 +94,15 @@ public class BlocSpotActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utils.setContext(this);
         setContentView(R.layout.activity_blocspot);
+
+        Utils.checkIfConnected();
+
         if (savedInstanceState != null) {
             mListState = savedInstanceState.getBoolean(Constants.LIST_STATE);
             mFilter = savedInstanceState.getString(Constants.FILTER_TEXT);
         }
-
-        Utils.setContext(this);
 
         mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.f_map);
         mPoiList = (ListView) findViewById(R.id.lv_list);
@@ -293,7 +295,7 @@ public class BlocSpotActivity extends AppCompatActivity
     @Override
     public void applyFilters(String name) {
         mFilter = name;
-        new GetPlaces(BlocSpotActivity.this, name).execute();
+        currentLocation();
     }
 
     @Override
@@ -399,7 +401,7 @@ public class BlocSpotActivity extends AppCompatActivity
 
     @Override
     public void refreshList(String id) {
-        new GetPlaces(BlocSpotActivity.this, mFilter).execute();
+        currentLocation();
         if (mInfoWindowFragment != null) {
             mInfoWindowFragment.refreshInfoWindow(id);
         }
@@ -579,14 +581,14 @@ public class BlocSpotActivity extends AppCompatActivity
 
         String provider = mLocationManager.getBestProvider(new Criteria(), true);
 
+        Toast.makeText(this, getString(R.string.toast_no_gps), Toast.LENGTH_SHORT).show();
         Location location = mLocationManager.getLastKnownLocation(provider);
 
         if (location == null) {
             mLocationManager.requestLocationUpdates(provider, 0, 0, listener);
         } else {
             mLocation = location;
-            new GetPlaces(BlocSpotActivity.this, null).execute();
-            Log.e(TAG, "location : " + location);
+            new GetPlaces(BlocSpotActivity.this, mFilter).execute();
         }
     }
 

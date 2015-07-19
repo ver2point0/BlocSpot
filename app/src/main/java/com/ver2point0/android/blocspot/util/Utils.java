@@ -1,7 +1,10 @@
 package com.ver2point0.android.blocspot.util;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ver2point0.android.blocspot.R;
 
@@ -34,6 +37,34 @@ public class Utils {
             } else if(color.equals(Constants.YELLOW)) {
                 colorLabel.setBackgroundColor(context.getResources().getColor(R.color.yellow));
             }
+        }
+    }
+
+    public static boolean haveNetworkConnection() {
+
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+        for (NetworkInfo ni : networkInfo) {
+            if (ni.getTypeName().equalsIgnoreCase(Constants.NETWORK_WIFI)) {
+                if (ni.isConnected()) {
+                    haveConnectedWifi = true;
+                }
+            }
+            if (ni.getTypeName().equalsIgnoreCase(Constants.NETWORK_MOBILE)) {
+                if (ni.isConnected()) {
+                    haveConnectedMobile = true;
+                }
+            }
+        }
+        return haveConnectedWifi || haveConnectedMobile;
+    }
+
+    public static void checkIfConnected() {
+        if (!haveNetworkConnection()) {
+            Toast.makeText(context, context.getString(R.string.toast_no_network), Toast.LENGTH_SHORT).show();
         }
     }
 }
