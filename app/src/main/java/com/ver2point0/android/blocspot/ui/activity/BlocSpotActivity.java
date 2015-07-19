@@ -31,7 +31,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -79,7 +78,6 @@ public class BlocSpotActivity extends AppCompatActivity
     private InfoWindowFragment mInfoWindowFragment;
     private boolean mInProgress;
     private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
     private PendingIntent mPendingIntent;
     private ArrayList<Geofence> mCurrentGeofences;
     private ArrayList<String> mGeoIds;
@@ -96,13 +94,15 @@ public class BlocSpotActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utils.setContext(this);
         setContentView(R.layout.activity_blocspot);
+
+        Utils.checkIfConnected();
+
         if (savedInstanceState != null) {
             mListState = savedInstanceState.getBoolean(Constants.LIST_STATE);
             mFilter = savedInstanceState.getString(Constants.FILTER_TEXT);
         }
-
-        Utils.setContext(this);
 
         mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.f_map);
         mPoiList = (ListView) findViewById(R.id.lv_list);
@@ -185,7 +185,8 @@ public class BlocSpotActivity extends AppCompatActivity
             mInProgress = true;
             mGoogleApiClient.connect();
         } else {
-
+            mInProgress = false;
+            beginAddGeofences(geoIds);
         }
     }
 
@@ -220,13 +221,12 @@ public class BlocSpotActivity extends AppCompatActivity
         mPendingIntent = getTransitionPendingIntent();
         LocationServices.GeofencingApi
                 .addGeofences(mGoogleApiClient, mCurrentGeofences, mPendingIntent)
-                .setResultCallback(new ResultCallback<Status>(){
+                .setResultCallback(new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
                         if (status.isSuccess()) {
-
-                        } else {
-
+                            Toast.makeText(BlocSpotActivity.this,
+                                    getString(R.string.toast_geofences_failed), Toast.LENGTH_SHORT).show();
                         }
                         mInProgress = false;
                         mGoogleApiClient.disconnect();
@@ -259,9 +259,7 @@ public class BlocSpotActivity extends AppCompatActivity
             try {
                 connectionResult.startResolutionForResult(
                         this, Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST);
-            } catch (IntentSender.SendIntentException e) {
-                Log.e("ConnectionFailed", String.valueOf(e));
-            }
+            } catch (IntentSender.SendIntentException ignored) {}
         } else {
             int errorCode = connectionResult.getErrorCode();
             Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
@@ -297,7 +295,7 @@ public class BlocSpotActivity extends AppCompatActivity
     @Override
     public void applyFilters(String name) {
         mFilter = name;
-        new GetPlaces(BlocSpotActivity.this, name).execute();
+        currentLocation();
     }
 
     @Override
@@ -403,7 +401,7 @@ public class BlocSpotActivity extends AppCompatActivity
 
     @Override
     public void refreshList(String id) {
-        new GetPlaces(BlocSpotActivity.this, mFilter).execute();
+        currentLocation();
         if (mInfoWindowFragment != null) {
             mInfoWindowFragment.refreshInfoWindow(id);
         }
@@ -413,7 +411,6 @@ public class BlocSpotActivity extends AppCompatActivity
 
         private ProgressDialog dialog;
         private Context context;
-        private Exception ex;
         private String filter;
 
         public GetPlaces(Context context, String filter) {
@@ -454,9 +451,6 @@ public class BlocSpotActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(Cursor cursor) {
             super.onPostExecute(cursor);
-            if (ex != null) {
-                dialog.dismiss();
-            }
 
             if (dialog.isShowing()) {
                 try {
@@ -496,24 +490,34 @@ public class BlocSpotActivity extends AppCompatActivity
         private float getMarkerColor(Cursor c) {
             float colorId = 0;
             String color = c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_CAT_COLOR));
-            if(color.equals(Constants.CYAN)) {
-                colorId = BitmapDescriptorFactory.HUE_CYAN;
-            } else if(color.equals(Constants.BLUE)) {
-                colorId = BitmapDescriptorFactory.HUE_BLUE;
-            } else if(color.equals(Constants.GREEN)) {
-                colorId = BitmapDescriptorFactory.HUE_GREEN;
-            } else if(color.equals(Constants.MAGENTA)) {
-                colorId = BitmapDescriptorFactory.HUE_MAGENTA;
-            } else if(color.equals(Constants.ORANGE)) {
-                colorId = BitmapDescriptorFactory.HUE_ORANGE;
-            } else if(color.equals(Constants.RED)) {
-                colorId = BitmapDescriptorFactory.HUE_RED;
-            } else if(color.equals(Constants.ROSE)) {
-                colorId = BitmapDescriptorFactory.HUE_ROSE;
-            } else if(color.equals(Constants.VIOLET)) {
-                colorId = BitmapDescriptorFactory.HUE_VIOLET;
-            } else if(color.equals(Constants.YELLOW)) {
-                colorId = BitmapDescriptorFactory.HUE_YELLOW;
+            switch (color) {
+                case Constants.CYAN:
+                    colorId = BitmapDescriptorFactory.HUE_CYAN;
+                    break;
+                case Constants.BLUE:
+                    colorId = BitmapDescriptorFactory.HUE_BLUE;
+                    break;
+                case Constants.GREEN:
+                    colorId = BitmapDescriptorFactory.HUE_GREEN;
+                    break;
+                case Constants.MAGENTA:
+                    colorId = BitmapDescriptorFactory.HUE_MAGENTA;
+                    break;
+                case Constants.ORANGE:
+                    colorId = BitmapDescriptorFactory.HUE_ORANGE;
+                    break;
+                case Constants.RED:
+                    colorId = BitmapDescriptorFactory.HUE_RED;
+                    break;
+                case Constants.ROSE:
+                    colorId = BitmapDescriptorFactory.HUE_ROSE;
+                    break;
+                case Constants.VIOLET:
+                    colorId = BitmapDescriptorFactory.HUE_VIOLET;
+                    break;
+                case Constants.YELLOW:
+                    colorId = BitmapDescriptorFactory.HUE_YELLOW;
+                    break;
             }
             return colorId;
         }
@@ -577,14 +581,14 @@ public class BlocSpotActivity extends AppCompatActivity
 
         String provider = mLocationManager.getBestProvider(new Criteria(), true);
 
+        Toast.makeText(this, getString(R.string.toast_no_gps), Toast.LENGTH_SHORT).show();
         Location location = mLocationManager.getLastKnownLocation(provider);
 
         if (location == null) {
             mLocationManager.requestLocationUpdates(provider, 0, 0, listener);
         } else {
             mLocation = location;
-            new GetPlaces(BlocSpotActivity.this, null).execute();
-            Log.e(TAG, "location : " + location);
+            new GetPlaces(BlocSpotActivity.this, mFilter).execute();
         }
     }
 
