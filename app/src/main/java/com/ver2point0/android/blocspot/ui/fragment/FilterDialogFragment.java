@@ -58,7 +58,7 @@ public class FilterDialogFragment extends DialogFragment {
         Type type = new TypeToken<ArrayList<Category>>(){}.getType();
         final ArrayList<Category> categories = new Gson().fromJson(json, type);
 
-        ListView listView = (ListView) rootView.findViewById(R.id.lv_category_list);
+        ListView listView = (ListView) rootView.findViewById(R.id.lv_category_list_0);
         final SavePoiListAdapter adapter = new SavePoiListAdapter(mContext, categories);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setAdapter(adapter);

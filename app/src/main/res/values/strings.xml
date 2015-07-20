@@ -9,6 +9,7 @@
     <string name="search_hint">Search</string>
     <string name="title_activity_places_search_item_adapter">PlacesSearchItemAdapter</string>
     <string name="button_cancel">Cancel</string>
+    <string name="button_save">Save</string>
     <string name="button_save_poi">Save POI</string>
     <string name="title_save_poi_dialog">Choose category</string>
     <string name="button_add_category">Add Category</string>

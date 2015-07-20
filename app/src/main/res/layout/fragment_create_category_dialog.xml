@@ -35,56 +35,56 @@
                     android:id="@+id/rb_blue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:text="                "
                     android:background="@color/blue"/>
 
                 <RadioButton
                     android:id="@+id/rb_green"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:text="                "
                     android:background="@color/green"/>
 
                 <RadioButton
                     android:id="@+id/rb_magenta"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:text="                 "
                     android:background="@color/magenta"/>
 
                 <RadioButton
                     android:id="@+id/rb_orange"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:text="                 "
                     android:background="@color/orange"/>
 
                 <RadioButton
                     android:id="@+id/rb_red"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:text="                "
                     android:background="@color/red"/>
 
                 <RadioButton
                     android:id="@+id/rb_rose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:text="                "
                     android:background="@color/rose"/>
 
                 <RadioButton
                     android:id="@+id/rb_violet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:text="                 "
                     android:background="@color/violet"/>
 
                 <RadioButton
                     android:id="@+id/rb_yellow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:text="                  "
                     android:background="@color/yellow"/>
             </RadioGroup>
 

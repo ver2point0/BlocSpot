@@ -7,8 +7,7 @@
     tools:context="com.ver2point0.android.blocspot.ui.fragment.SavePoiDialogFragment">
 
     <ListView
-        android:id="@+id/lv_category_list"
-        android:background="@drawable/clicked_blue"
+        android:id="@+id/lv_category_list_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -18,12 +17,11 @@
 
     <Button
         android:id="@+id/bt_add"
-        android:layout_below="@id/lv_category_list"
+        android:layout_below="@id/lv_category_list_1"
         style="?android:attr/buttonStyleSmall"
         android:text="@string/button_add_category"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"/>
+        android:layout_height="wrap_content"/>
 
     <LinearLayout
         android:id="@+id/ll_buttons"
@@ -35,22 +33,17 @@
 
         <Button
             android:id="@+id/bt_save"
-            android:text=""
+            android:text="@string/button_save"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/editText"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
+            android:layout_height="wrap_content"/>
 
         <Button
             android:id="@+id/bt_cancel"
             android:text="@string/button_cancel"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/editText"
-            android:layout_alignRight="@+id/editText"
-            android:layout_alignEnd="@+id/editText"/>
+            android:layout_height="wrap_content"/>
     </LinearLayout>
+
 </RelativeLayout>
