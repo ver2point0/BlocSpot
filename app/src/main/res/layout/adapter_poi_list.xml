@@ -80,7 +80,7 @@
                 <TextView
                     android:id="@+id/tv_place_dist"
                     android:text=""
-                    android:textColor="#D3D3D3"
+                    android:textColor="@color/text_secondary"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"

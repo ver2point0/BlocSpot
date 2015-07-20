@@ -59,24 +59,25 @@ public class SavePoiListAdapter extends ArrayAdapter<Category> implements Checka
     private void setColor(int position, RelativeLayout background) {
         String color = mCategories.get(position).getColor();
 
+        // Use background.setBackgroundDrawable instead of background.setBackground
         if (color.equals(Constants.CYAN)) {
-            background.setBackground(ContextCompat.getDrawable(mContext, R.drawable.clicked_cyan));
+            background.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.clicked_cyan));
         } else if(color.equals(Constants.BLUE)) {
-            background.setBackground(ContextCompat.getDrawable(mContext, R.drawable.clicked_blue));
+            background.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.clicked_blue));
         } else if(color.equals(Constants.GREEN)) {
-            background.setBackground(ContextCompat.getDrawable(mContext, R.drawable.clicked_green));
+            background.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.clicked_green));
         } else if(color.equals(Constants.MAGENTA)) {
-            background.setBackground(ContextCompat.getDrawable(mContext, R.drawable.clicked_magenta));
+            background.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.clicked_magenta));
         } else if(color.equals(Constants.ORANGE)) {
-            background.setBackground(ContextCompat.getDrawable(mContext, R.drawable.clicked_orange));
+            background.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.clicked_orange));
         } else if(color.equals(Constants.RED)) {
-            background.setBackground(ContextCompat.getDrawable(mContext, R.drawable.clicked_red));
+            background.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.clicked_red));
         } else if(color.equals(Constants.ROSE)) {
-            background.setBackground(ContextCompat.getDrawable(mContext, R.drawable.clicked_rose));
+            background.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.clicked_rose));
         } else if(color.equals(Constants.VIOLET)) {
-            background.setBackground(ContextCompat.getDrawable(mContext, R.drawable.clicked_violet));
+            background.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.clicked_violet));
         } else if(color.equals(Constants.YELLOW)) {
-            background.setBackground(ContextCompat.getDrawable(mContext, R.drawable.clicked_yellow));
+            background.setBackgroundDrawable(ContextCompat.getDrawable(mContext, R.drawable.clicked_yellow));
         }
     }
 
