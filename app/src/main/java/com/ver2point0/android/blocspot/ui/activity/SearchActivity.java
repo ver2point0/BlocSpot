@@ -93,7 +93,7 @@ public class SearchActivity extends FragmentActivity implements SavePoiDialogFra
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
 
-        SearchView searchView = (SearchView) menu.findItem(R.id.lv_searchList).getActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.item_search).getActionView();
         searchView.setIconifiedByDefault(false);
         searchView.setFocusable(true);
         searchView.setSubmitButtonEnabled(true);

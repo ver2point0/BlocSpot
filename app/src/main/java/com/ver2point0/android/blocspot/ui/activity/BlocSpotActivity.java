@@ -75,7 +75,7 @@ public class BlocSpotActivity extends AppCompatActivity
     private PoiTable mPoiTable = new PoiTable();
     private SupportMapFragment mMapFragment;
     private String mFilter;
-    private InfoWindowFragment mInfoWindowFragment;
+    private InfoWindowFragment mInfoWindowFragment = new InfoWindowFragment();
     private boolean mInProgress;
     private GoogleApiClient mGoogleApiClient;
     private PendingIntent mPendingIntent;
@@ -213,11 +213,6 @@ public class BlocSpotActivity extends AppCompatActivity
 
     @Override
     public void onConnected(Bundle bundle) {
-//        mLocationRequest = LocationRequest.create();
-//        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-//        mLocationRequest.setInterval(1000); // Update location every second
-//        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,
-//                (com.google.android.gms.location.LocationListener) this);
         mPendingIntent = getTransitionPendingIntent();
         LocationServices.GeofencingApi
                 .addGeofences(mGoogleApiClient, mCurrentGeofences, mPendingIntent)
@@ -468,10 +463,10 @@ public class BlocSpotActivity extends AppCompatActivity
             for (int i = 0; i < cursor.getCount(); i++) {
                 c = ((Cursor) adapter.getItem(i));
                 mGoogleMap.addMarker(new MarkerOptions()
-                        .title(cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_ID)))
+                        .title(c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_ID)))
                         .snippet(c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_GEO_ID)))
-                        .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE)),
-                                cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE))))
+                        .position(new LatLng(c.getDouble(c.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE)),
+                                c.getDouble(c.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE))))
                         .icon(BitmapDescriptorFactory
                                 .defaultMarker(getMarkerColor(c))));
                 mGeoIds.add(c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_GEO_ID)));
@@ -538,7 +533,6 @@ public class BlocSpotActivity extends AppCompatActivity
                 });
             }
         });
-        //mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.f_map)).getMap();
     }
 
     @Override
