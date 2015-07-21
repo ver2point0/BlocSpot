@@ -175,10 +175,8 @@ public class SearchActivity extends FragmentActivity implements SavePoiDialogFra
 
         @Override
         protected ArrayList<Place> doInBackground(Void... arg0) {
-            PlacesService service = new PlacesService(
-                    Constants.API_KEY);
-            ArrayList<Place> findPlaces = service.findPlaces(mLocation.getLatitude(),
-                    mLocation.getLongitude(), searchText);
+            PlacesService service = new PlacesService(Constants.API_KEY);
+            ArrayList<Place> findPlaces = service.findPlaces(mLocation.getLatitude(), mLocation.getLongitude(), searchText);
             return findPlaces;
         }
 

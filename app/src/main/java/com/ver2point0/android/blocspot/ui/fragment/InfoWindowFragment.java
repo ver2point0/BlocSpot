@@ -1,10 +1,13 @@
 package com.ver2point0.android.blocspot.ui.fragment;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +43,7 @@ public class InfoWindowFragment extends DialogFragment {
         // Required empty public constructor
     }
 
+    @SuppressLint("ValidFragment")
     public InfoWindowFragment(String id, String geoId, Context context) {
         mId = id;
         mContext = context;
@@ -134,6 +138,7 @@ public class InfoWindowFragment extends DialogFragment {
             return mPoiTable.poiSpecificQuery(id);
         }
 
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         @Override
         protected void onPostExecute(Cursor cursor) {
             super.onPostExecute(cursor);
@@ -158,12 +163,12 @@ public class InfoWindowFragment extends DialogFragment {
 
                 if(visited != null && visited) {
                     mVisitedButton.setImageDrawable(mContext.getResources()
-                            .getDrawable(R.drawable.ic_check_on));
+                            .getDrawable(R.drawable.ic_check_on, null));
                     mVisited = true;
                 }
                 else if(visited != null && !visited) {
                     mVisitedButton.setImageDrawable(mContext.getResources()
-                            .getDrawable(R.drawable.ic_check_off));
+                            .getDrawable(R.drawable.ic_check_off, null));
                     mVisited = false;
                 }
             }

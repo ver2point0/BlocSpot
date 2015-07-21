@@ -1,5 +1,6 @@
 package com.ver2point0.android.blocspot.ui.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -27,11 +28,11 @@ public class FilterDialogFragment extends DialogFragment {
 
     private Context mContext;
     private Category mCategory;
-
     private OnFilterListener mFilterListener;
 
     public FilterDialogFragment() {}
 
+    @SuppressLint("ValidFragment")
     public FilterDialogFragment(Context context) {
         mContext = context;
     }

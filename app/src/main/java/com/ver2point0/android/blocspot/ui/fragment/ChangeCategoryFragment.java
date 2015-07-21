@@ -1,5 +1,6 @@
 package com.ver2point0.android.blocspot.ui.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -34,6 +35,7 @@ public class ChangeCategoryFragment extends DialogFragment {
 
     public ChangeCategoryFragment() {}
 
+    @SuppressLint("ValidFragment")
     public ChangeCategoryFragment(String id, Context context) {
         mId = id;
         mContext = context;

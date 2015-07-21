@@ -1,6 +1,7 @@
 package com.ver2point0.android.blocspot.ui.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -17,7 +18,6 @@ import com.ver2point0.android.blocspot.util.Constants;
 
 public class EditNoteFragment extends DialogFragment {
 
-    private String mName;
     private String mOldNote;
     private String mId;
     private Context mContext;
@@ -26,17 +26,17 @@ public class EditNoteFragment extends DialogFragment {
 
     public EditNoteFragment() {}
 
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putString(Constants.EDIT_NOTE_TEXT, mNewNote.getText().toString());
-
-    }
-
+    @SuppressLint("ValidFragment")
     public EditNoteFragment(String id, Context context, String note) {
         mId = id;
         mContext = context;
         mOldNote = note;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString(Constants.EDIT_NOTE_TEXT, mNewNote.getText().toString());
     }
 
     @Override
@@ -65,7 +65,7 @@ public class EditNoteFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 String updatedNote = mNewNote.getText().toString();
-                ((BlocSpotActivity) mContext).updateNoteDataBase(mName, updatedNote);
+                ((BlocSpotActivity) mContext).updateNoteDataBase(mId, updatedNote);
                 dismiss();
             }
         });

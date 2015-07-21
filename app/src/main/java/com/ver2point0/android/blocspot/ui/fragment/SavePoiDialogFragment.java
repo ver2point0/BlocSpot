@@ -1,6 +1,7 @@
 package com.ver2point0.android.blocspot.ui.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -42,6 +43,7 @@ public class SavePoiDialogFragment extends DialogFragment {
 
     public SavePoiDialogFragment() {}
 
+    @SuppressLint("ValidFragment")
     public SavePoiDialogFragment(Context context, Place place) {
         mContext = context;
         mPlace = place;

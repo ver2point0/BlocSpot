@@ -1,5 +1,6 @@
 package com.ver2point0.android.blocspot.ui.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -34,6 +35,7 @@ public class CreateCategoryDialogFragment extends DialogFragment {
 
     public CreateCategoryDialogFragment() {}
 
+    @SuppressLint("ValidFragment")
     public CreateCategoryDialogFragment(Place place, ArrayList<Category> categories, Context context, String id) {
         mPlace = place;
         mCategories = categories;
@@ -90,7 +92,7 @@ public class CreateCategoryDialogFragment extends DialogFragment {
                     SharedPreferences.Editor prefsEditor =
                             mContext.getSharedPreferences(Constants.MAIN_PREFS, 0).edit();
                     prefsEditor.putString(Constants.CATEGORY_ARRAY, jsonCat);
-                    prefsEditor.commit();
+                    prefsEditor.apply();
 
                     if (mPlace != null) {
                         SavePoiDialogFragment poiDialog = new SavePoiDialogFragment(mContext, mPlace);

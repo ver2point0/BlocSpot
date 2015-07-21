@@ -5,11 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.ver2point0.android.blocspot.ui.activity.SearchActivity">
 
-      <item
-          android:id="@+id/item_search"
-          android:title="Search"
-          android:icon="@drawable/ic_menu_search"
-          app:showAsAction="always"
-          android:actionViewClass="android.widget.SearchView"/>
+    <item
+        android:id="@+id/item_search"
+        android:title="Search"
+        android:icon="@drawable/ic_menu_search"
+        app:showAsAction="always"
+        android:actionViewClass="android.widget.SearchView"/>
 
 </menu>
