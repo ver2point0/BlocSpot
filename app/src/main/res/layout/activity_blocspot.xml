@@ -17,6 +17,7 @@
     <TextView
         android:id="@+id/tv_empty_list_view"
         android:text="@string/empty_poi_list"
+        android:textColor="@color/text_primary"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_centerInParent="true"
         android:gravity="center"

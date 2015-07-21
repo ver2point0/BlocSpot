@@ -1,5 +1,6 @@
 package com.ver2point0.android.blocspot.ui.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -27,11 +28,11 @@ public class FilterDialogFragment extends DialogFragment {
 
     private Context mContext;
     private Category mCategory;
-
     private OnFilterListener mFilterListener;
 
     public FilterDialogFragment() {}
 
+    @SuppressLint("ValidFragment")
     public FilterDialogFragment(Context context) {
         mContext = context;
     }
@@ -58,7 +59,7 @@ public class FilterDialogFragment extends DialogFragment {
         Type type = new TypeToken<ArrayList<Category>>(){}.getType();
         final ArrayList<Category> categories = new Gson().fromJson(json, type);
 
-        ListView listView = (ListView) rootView.findViewById(R.id.lv_category_list);
+        ListView listView = (ListView) rootView.findViewById(R.id.lv_category_list_0);
         final SavePoiListAdapter adapter = new SavePoiListAdapter(mContext, categories);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setAdapter(adapter);

@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/layoutBackground"
+        android:id="@+id/rl_layoutBackground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/activity_vertical_padding">
@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/tv_place_dist"/>
+            android:layout_alignParentStart="true"/>
 
     </RelativeLayout>
 </LinearLayout>

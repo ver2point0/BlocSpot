@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -28,8 +27,6 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -75,7 +72,7 @@ public class BlocSpotActivity extends AppCompatActivity
     private PoiTable mPoiTable = new PoiTable();
     private SupportMapFragment mMapFragment;
     private String mFilter;
-    private InfoWindowFragment mInfoWindowFragment;
+    private InfoWindowFragment mInfoWindowFragment = new InfoWindowFragment();
     private boolean mInProgress;
     private GoogleApiClient mGoogleApiClient;
     private PendingIntent mPendingIntent;
@@ -213,25 +210,30 @@ public class BlocSpotActivity extends AppCompatActivity
 
     @Override
     public void onConnected(Bundle bundle) {
-//        mLocationRequest = LocationRequest.create();
-//        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-//        mLocationRequest.setInterval(1000); // Update location every second
-//        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest,
-//                (com.google.android.gms.location.LocationListener) this);
-        mPendingIntent = getTransitionPendingIntent();
-        LocationServices.GeofencingApi
-                .addGeofences(mGoogleApiClient, mCurrentGeofences, mPendingIntent)
-                .setResultCallback(new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        if (status.isSuccess()) {
-                            Toast.makeText(BlocSpotActivity.this,
-                                    getString(R.string.toast_geofences_failed), Toast.LENGTH_SHORT).show();
-                        }
-                        mInProgress = false;
-                        mGoogleApiClient.disconnect();
-                    }
-                });
+
+        mLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLocation != null) {
+            Log.d("TEST LOCATION", mLocation.getLatitude() + "");
+            Log.d("TEST LOCATION", mLocation.getLongitude() + "");
+
+//            mLatitude.setText(String.valueOf(mLastLocation.getLatitude()));
+//            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+        }
+//        mPendingIntent = getTransitionPendingIntent();
+//        LocationServices.GeofencingApi
+//                .addGeofences(mGoogleApiClient, mCurrentGeofences, mPendingIntent)
+//                .setResultCallback(new ResultCallback<Status>() {
+//                    @Override
+//                    public void onResult(Status status) {
+//                        if (status.isSuccess()) {
+//                            Toast.makeText(BlocSpotActivity.this,
+//                                    getString(R.string.toast_geofences_failed), Toast.LENGTH_SHORT).show();
+//                        }
+//                        mInProgress = false;
+//                        mGoogleApiClient.disconnect();
+//                    }
+//                });
     }
 
     @Override
@@ -468,10 +470,10 @@ public class BlocSpotActivity extends AppCompatActivity
             for (int i = 0; i < cursor.getCount(); i++) {
                 c = ((Cursor) adapter.getItem(i));
                 mGoogleMap.addMarker(new MarkerOptions()
-                        .title(cursor.getString(cursor.getColumnIndex(Constants.TABLE_COLUMN_ID)))
+                        .title(c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_ID)))
                         .snippet(c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_GEO_ID)))
-                        .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE)),
-                                cursor.getDouble(cursor.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE))))
+                        .position(new LatLng(c.getDouble(c.getColumnIndex(Constants.TABLE_COLUMN_LATITUDE)),
+                                c.getDouble(c.getColumnIndex(Constants.TABLE_COLUMN_LONGITUDE))))
                         .icon(BitmapDescriptorFactory
                                 .defaultMarker(getMarkerColor(c))));
                 mGeoIds.add(c.getString(c.getColumnIndex(Constants.TABLE_COLUMN_GEO_ID)));
@@ -538,7 +540,6 @@ public class BlocSpotActivity extends AppCompatActivity
                 });
             }
         });
-        //mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.f_map)).getMap();
     }
 
     @Override
@@ -579,13 +580,13 @@ public class BlocSpotActivity extends AppCompatActivity
     private void currentLocation() {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        String provider = mLocationManager.getBestProvider(new Criteria(), true);
+//        String provider = mLocationManager.getBestProvider(new Criteria(), true);
 
         Toast.makeText(this, getString(R.string.toast_no_gps), Toast.LENGTH_SHORT).show();
-        Location location = mLocationManager.getLastKnownLocation(provider);
+        Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
         if (location == null) {
-            mLocationManager.requestLocationUpdates(provider, 0, 0, listener);
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
         } else {
             mLocation = location;
             new GetPlaces(BlocSpotActivity.this, mFilter).execute();

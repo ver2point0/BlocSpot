@@ -46,7 +46,7 @@ public class SimpleGeofenceStore {
         editor.putFloat(getGeofenceFieldKey(id, Constants.KEY_RADIUS), geofence.getRadius());
         editor.putLong(getGeofenceFieldKey(id, Constants.KEY_EXPIRATION_DURATION), geofence.getExpirationDuration());
         editor.putInt(getGeofenceFieldKey(id, Constants.KEY_TRANSITION_TYPE), geofence.getTransitionType());
-        editor.commit();
+        editor.apply();
     }
 
     public void removeGeofence(String id) {
@@ -56,7 +56,7 @@ public class SimpleGeofenceStore {
         editor.remove(getGeofenceFieldKey(id, Constants.KEY_RADIUS));
         editor.remove(getGeofenceFieldKey(id, Constants.KEY_EXPIRATION_DURATION));
         editor.remove(getGeofenceFieldKey(id, Constants.KEY_TRANSITION_TYPE));
-        editor.commit();
+        editor.apply();
     }
 
     private String getGeofenceFieldKey(String id, String fieldName) {

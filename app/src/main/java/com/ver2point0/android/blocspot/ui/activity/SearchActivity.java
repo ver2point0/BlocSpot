@@ -93,14 +93,15 @@ public class SearchActivity extends FragmentActivity implements SavePoiDialogFra
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
 
-        SearchView searchView = (SearchView) menu.findItem(R.id.lv_searchList).getActionView();
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.item_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
         searchView.setIconifiedByDefault(false);
         searchView.setFocusable(true);
         searchView.setSubmitButtonEnabled(true);
         searchView.requestFocusFromTouch();
 
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         return true;
     }
 
@@ -174,10 +175,8 @@ public class SearchActivity extends FragmentActivity implements SavePoiDialogFra
 
         @Override
         protected ArrayList<Place> doInBackground(Void... arg0) {
-            PlacesService service = new PlacesService(
-                    Constants.API_KEY);
-            ArrayList<Place> findPlaces = service.findPlaces(mLocation.getLatitude(),
-                    mLocation.getLongitude(), searchText);
+            PlacesService service = new PlacesService(Constants.API_KEY);
+            ArrayList<Place> findPlaces = service.findPlaces(mLocation.getLatitude(), mLocation.getLongitude(), searchText);
             return findPlaces;
         }
 
