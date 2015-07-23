@@ -211,8 +211,7 @@ public class BlocSpotActivity extends AppCompatActivity
     @Override
     public void onConnected(Bundle bundle) {
 
-        mLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+        mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLocation != null) {
             Log.d("TEST LOCATION", mLocation.getLatitude() + "");
             Log.d("TEST LOCATION", mLocation.getLongitude() + "");

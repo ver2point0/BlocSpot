@@ -115,6 +115,7 @@ public class SearchActivity extends FragmentActivity implements SavePoiDialogFra
     private void currentLocation(String query) {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         String provider = mLocationManager.getBestProvider(new Criteria(), true);
+
         Location location = mLocationManager.getLastKnownLocation(provider);
 
         if (location == null) {

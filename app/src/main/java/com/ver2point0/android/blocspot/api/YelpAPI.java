@@ -25,6 +25,7 @@ import org.scribe.oauth.OAuthService;
  * See <a href="http://www.yelp.com/developers/documentation">Yelp Documentation</a> for more info.
  *
  */
+
 public class YelpAPI {
 
     private static final String API_HOST = "api.yelp.com";
@@ -38,10 +39,10 @@ public class YelpAPI {
      * Update OAuth credentials below from the Yelp Developers API site:
      * http://www.yelp.com/developers/getting_started/api_access
      */
-    private static final String CONSUMER_KEY = "";
-    private static final String CONSUMER_SECRET = "";
-    private static final String TOKEN = "";
-    private static final String TOKEN_SECRET = "";
+    private static final String CONSUMER_KEY = "egN7UoIFSNDwxpQba7VDIw";
+    private static final String CONSUMER_SECRET = "8TAHSGUaYv3cYnlHW3M40D9B5WY";
+    private static final String TOKEN = "votwHUl8cH6bx6wy9YTmtNVedAYpzUhe";
+    private static final String TOKEN_SECRET = "MN-5JTzQNLXwjrieL5j5ydYgeAg";
 
     OAuthService service;
     Token accessToken;
@@ -60,6 +61,8 @@ public class YelpAPI {
                         .apiSecret(consumerSecret).build();
         this.accessToken = new Token(token, tokenSecret);
     }
+
+    public YelpAPI(){}
 
     /**
      * Creates and sends a request to the Search API by term and location.
