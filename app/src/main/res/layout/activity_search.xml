@@ -8,13 +8,14 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.ver2point0.android.blocspot.ui.activity.SearchActivity">
+    tools:context="com.ver2point0.android.blocspot.ui.activity.SearchResultsActivity">
 
     <ListView
         android:id="@+id/lv_searchList"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+    </ListView>
 
 </RelativeLayout>

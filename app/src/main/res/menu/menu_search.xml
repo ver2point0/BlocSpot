@@ -3,13 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.ver2point0.android.blocspot.ui.activity.SearchActivity">
+    tools:context="com.ver2point0.android.blocspot.ui.activity.SearchResultsActivity">
 
     <item
         android:id="@+id/item_search"
         android:title="Search"
         android:icon="@drawable/ic_menu_search"
         app:showAsAction="always"
-        android:actionViewClass="android.widget.SearchView"/>
+        app:actionViewClass="android.support.v7.widget.SearchView"/>
 
 </menu>

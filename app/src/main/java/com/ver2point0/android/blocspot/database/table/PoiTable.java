@@ -67,7 +67,7 @@ public class PoiTable extends Table {
                 null, null, null, null);
     }
 
-    public Cursor notificatinoQuery(String queryString, String[] geoIds) {
+    public Cursor notificationQuery(String queryString, String[] geoIds) {
         String query = "SELECT * FROM " + Constants.TABLE_POI_NAME + " WHERE " +
                 Constants.TABLE_COLUMN_GEO_ID + " IN (" + queryString + ")";
         return mDatabase.rawQuery(query, geoIds);

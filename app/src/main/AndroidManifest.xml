@@ -35,19 +35,18 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value=".SearchActivity"/>
         </activity>
 
         <activity
-            android:name=".ui.activity.SearchActivity"
-            android:label="@string/title_activity_search">
-
+            android:name=".ui.activity.SearchResultsActivity"
+            android:label="@string/title_activity_search"
+            android:launchMode="singleTop"
+           android:parentActivityName=".ui.activity.BlocSpotActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
-                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
             <meta-data
                 android:name="android.app.searchable"

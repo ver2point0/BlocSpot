@@ -50,8 +50,7 @@
     <string name="toast_no_gps">No GPS Signal</string>
     <string name="toast_no_network">No Network Connection</string>
 
-    <string name="empty_poi_list">You have not selected any Points of Interest!
-        \nClick the search button above to begin.</string>
+    <string name="empty_poi_list">Click the search button above to begin.</string>
 
     <string-array name="places">
         <item>ATM</item>

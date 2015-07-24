@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.BlocSpotActivity">
 
-    <!--<include layout="@layout/toolbar_blocspot"/>-->
+    <include layout="@layout/toolbar_blocspot"/>
 
     <ListView
         android:id="@+id/lv_list"
@@ -32,6 +32,7 @@
         android:id="@+id/f_map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_below="@+id/toolbar_blocspot"/>
 
 </RelativeLayout>
