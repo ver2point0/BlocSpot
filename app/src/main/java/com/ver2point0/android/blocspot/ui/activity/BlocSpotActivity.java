@@ -554,19 +554,18 @@ public class BlocSpotActivity extends AppCompatActivity
             getMenuInflater().inflate(R.menu.menu_map, menu);
         }
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        final Intent searchResultsIntent = new Intent(this, SearchResultsActivity.class);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.d("ON QUERY", query);
+                searchResultsIntent.putExtra(Intent.EXTRA_SUBJECT, query);
+                startActivity(searchResultsIntent);
                 /*
                 * create intent to searchresults activity
                 * pass queryString to searchresults activity using Extra
                 * startactivity(intent)
-                *
-                *
-                *
                 * */
-
                 return true;
             }
 
