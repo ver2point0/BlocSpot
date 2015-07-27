@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.ver2point0.android.blocspot.R;
 import com.ver2point0.android.blocspot.adapter.PlacesSearchItemAdapter;
+import com.ver2point0.android.blocspot.api.YelpAPI;
 import com.ver2point0.android.blocspot.places.Place;
 import com.ver2point0.android.blocspot.places.PlacesService;
 import com.ver2point0.android.blocspot.ui.fragment.SavePoiDialogFragment;
@@ -54,6 +55,9 @@ public class SearchResultsActivity extends FragmentActivity implements SavePoiDi
         Utils.checkIfConnected();
         if (savedInstanceState != null) {
             mQuery = savedInstanceState.getString(Constants.QUERY_TEXT);
+            mQuery = getIntent().getStringExtra(BlocSpotActivity.SEARCH_QUERY);
+            YelpAPI yelpSearch = new YelpAPI();
+            yelpSearch.searchForBusinessesByLocation(mQuery, "Anchorage, AK");
             /*
             * get extra from blocspotactivity
             * query yelp with queryString
@@ -109,9 +113,6 @@ public class SearchResultsActivity extends FragmentActivity implements SavePoiDi
                 * create intent to searchresults activity
                 * pass queryString to searchresults activity using Extra
                 * startactivity(intent)
-                *
-                *
-                *
                 * */
 
                 return true;

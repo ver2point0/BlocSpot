@@ -545,6 +545,8 @@ public class BlocSpotActivity extends AppCompatActivity
         });
     }
 
+    public static final String SEARCH_QUERY = "com.ver2point0.android.blocspot.ui.BlocSpotActivity";
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (mListState) {
@@ -559,7 +561,7 @@ public class BlocSpotActivity extends AppCompatActivity
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.d("ON QUERY", query);
-                searchResultsIntent.putExtra(Intent.EXTRA_SUBJECT, query);
+                searchResultsIntent.putExtra(SEARCH_QUERY, query);
                 startActivity(searchResultsIntent);
                 /*
                 * create intent to searchresults activity
