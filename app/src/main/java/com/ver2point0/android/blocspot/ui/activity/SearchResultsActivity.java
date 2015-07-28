@@ -109,11 +109,10 @@ public class SearchResultsActivity extends FragmentActivity implements SavePoiDi
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.d("ON QUERY", query);
-                /*
-                * create intent to searchresults activity
-                * pass queryString to searchresults activity using Extra
-                * startactivity(intent)
-                * */
+//                1) User enters search
+//                2) Put list results into some List type data structure
+//                3) Update the ListView adapter with the new data structure
+//                4) Set the newly updated adapter to the ListView
 
                 return true;
             }
