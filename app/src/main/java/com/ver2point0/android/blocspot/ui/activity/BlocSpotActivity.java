@@ -563,11 +563,6 @@ public class BlocSpotActivity extends AppCompatActivity
                 Log.d("ON QUERY", query);
                 searchResultsIntent.putExtra(SEARCH_QUERY, query);
                 startActivity(searchResultsIntent);
-                /*
-                * create intent to searchresults activity
-                * pass queryString to searchresults activity using Extra
-                * startactivity(intent)
-                * */
                 return true;
             }
 

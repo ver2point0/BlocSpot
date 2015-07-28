@@ -1,5 +1,7 @@
 package com.ver2point0.android.blocspot.api;
 
+import android.util.Log;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
@@ -62,7 +64,9 @@ public class YelpAPI {
         this.accessToken = new Token(token, tokenSecret);
     }
 
-    public YelpAPI(){}
+    public YelpAPI() {
+        this(CONSUMER_KEY, CONSUMER_SECRET, TOKEN, TOKEN_SECRET);
+    }
 
     /**
      * Creates and sends a request to the Search API by term and location.
@@ -130,7 +134,7 @@ public class YelpAPI {
     private static void queryAPI(YelpAPI yelpApi, YelpAPICLI yelpApiCli) {
         String searchResponseJSON =
                 yelpApi.searchForBusinessesByLocation(yelpApiCli.term, yelpApiCli.location);
-
+        Log.d("SearchResponse", searchResponseJSON);
         JSONParser parser = new JSONParser();
         JSONObject response = null;
         try {

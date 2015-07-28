@@ -52,17 +52,15 @@ public class SearchResultsActivity extends FragmentActivity implements SavePoiDi
         Utils.setContext(this);
         setContentView(R.layout.activity_search);
 
+        // Querying error lines 56-58 (pulled out of savedInstanceState)
+        mQuery = getIntent().getStringExtra(BlocSpotActivity.SEARCH_QUERY);
+        YelpAPI yelpSearch = new YelpAPI();
+        yelpSearch.searchForBusinessesByLocation(mQuery, "Anchorage, AK");
+
         Utils.checkIfConnected();
         if (savedInstanceState != null) {
-            mQuery = savedInstanceState.getString(Constants.QUERY_TEXT);
-            mQuery = getIntent().getStringExtra(BlocSpotActivity.SEARCH_QUERY);
-            YelpAPI yelpSearch = new YelpAPI();
-            yelpSearch.searchForBusinessesByLocation(mQuery, "Anchorage, AK");
-            /*
-            * get extra from blocspotactivity
-            * query yelp with queryString
-            *
-            * */
+            //mQuery = savedInstanceState.getString(Constants.QUERY_TEXT);
+
         }
 
         mSearchList = (ListView) findViewById(R.id.lv_searchList);
