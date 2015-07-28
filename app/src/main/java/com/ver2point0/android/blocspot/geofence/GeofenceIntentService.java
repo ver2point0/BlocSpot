@@ -108,7 +108,7 @@ public class GeofenceIntentService extends IntentService {
 
         @Override
         protected Cursor doInBackground(Void... params) {
-            return mPoiTable.notificatinoQuery(queryString, geofenceIds);
+            return mPoiTable.notificationQuery(queryString, geofenceIds);
         }
 
         @Override

@@ -16,6 +16,8 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -127,8 +129,8 @@ public class BlocSpotActivity extends AppCompatActivity
             mPoiList.setVisibility(View.INVISIBLE);
         }
 
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_blocspot);
-//        setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_blocspot);
+        setSupportActionBar(toolbar);
     } // end method onCreate
 
     @Override
@@ -211,14 +213,10 @@ public class BlocSpotActivity extends AppCompatActivity
     @Override
     public void onConnected(Bundle bundle) {
 
-        mLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+        mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLocation != null) {
             Log.d("TEST LOCATION", mLocation.getLatitude() + "");
             Log.d("TEST LOCATION", mLocation.getLongitude() + "");
-
-//            mLatitude.setText(String.valueOf(mLastLocation.getLatitude()));
-//            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
         }
 //        mPendingIntent = getTransitionPendingIntent();
 //        LocationServices.GeofencingApi
@@ -226,7 +224,7 @@ public class BlocSpotActivity extends AppCompatActivity
 //                .setResultCallback(new ResultCallback<Status>() {
 //                    @Override
 //                    public void onResult(Status status) {
-//                        if (status.isSuccess()) {
+//                        if (!status.isSuccess()) {
 //                            Toast.makeText(BlocSpotActivity.this,
 //                                    getString(R.string.toast_geofences_failed), Toast.LENGTH_SHORT).show();
 //                        }
@@ -243,16 +241,20 @@ public class BlocSpotActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLocationChanged(Location location) {}
+    public void onLocationChanged(Location location) {
+    }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {}
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
 
     @Override
-    public void onProviderEnabled(String provider) {}
+    public void onProviderEnabled(String provider) {
+    }
 
     @Override
-    public void onProviderDisabled(String provider) {}
+    public void onProviderDisabled(String provider) {
+    }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -261,7 +263,8 @@ public class BlocSpotActivity extends AppCompatActivity
             try {
                 connectionResult.startResolutionForResult(
                         this, Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST);
-            } catch (IntentSender.SendIntentException ignored) {}
+            } catch (IntentSender.SendIntentException ignored) {
+            }
         } else {
             int errorCode = connectionResult.getErrorCode();
             Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
@@ -278,7 +281,8 @@ public class BlocSpotActivity extends AppCompatActivity
     private void checkCategoryPreference() {
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.MAIN_PREFS, Context.MODE_PRIVATE);
         String json = sharedPreferences.getString(Constants.CATEGORY_ARRAY, null);
-        Type type = new TypeToken<ArrayList<Category>>(){}.getType();
+        Type type = new TypeToken<ArrayList<Category>>() {
+        }.getType();
         ArrayList<Category> categories = new Gson().fromJson(json, type);
         if (categories == null) {
             categories = new ArrayList<Category>();
@@ -292,7 +296,8 @@ public class BlocSpotActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {}
+    public void onMapReady(GoogleMap googleMap) {
+    }
 
     @Override
     public void applyFilters(String name) {
@@ -383,7 +388,7 @@ public class BlocSpotActivity extends AppCompatActivity
     }
 
     @Override
-    public void changeCategory(String id){
+    public void changeCategory(String id) {
         ChangeCategoryFragment dialog = new ChangeCategoryFragment(id, this);
         dialog.show(getFragmentManager(), "dialog");
     }
@@ -398,8 +403,6 @@ public class BlocSpotActivity extends AppCompatActivity
         intent.putExtra(Intent.EXTRA_TEXT, shareUrl);
         startActivity(Intent.createChooser(intent, getString(R.string.intent_share_poi)));
     }
-
-
 
     @Override
     public void refreshList(String id) {
@@ -430,7 +433,7 @@ public class BlocSpotActivity extends AppCompatActivity
                 dialog.setMessage(getString(R.string.loading_message));
                 dialog.isIndeterminate();
                 dialog.show();
-            } catch (Exception ignored){
+            } catch (Exception ignored) {
 
             }
         } // end method onPreExecute()
@@ -542,6 +545,8 @@ public class BlocSpotActivity extends AppCompatActivity
         });
     }
 
+    public static final String SEARCH_QUERY = "com.ver2point0.android.blocspot.ui.BlocSpotActivity";
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (mListState) {
@@ -550,6 +555,23 @@ public class BlocSpotActivity extends AppCompatActivity
         if (!mListState) {
             getMenuInflater().inflate(R.menu.menu_map, menu);
         }
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        final Intent searchResultsIntent = new Intent(this, SearchResultsActivity.class);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d("ON QUERY", query);
+                searchResultsIntent.putExtra(SEARCH_QUERY, query);
+                startActivity(searchResultsIntent);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
         return true;
     }
 
@@ -567,9 +589,9 @@ public class BlocSpotActivity extends AppCompatActivity
                 mListState = true;
             }
             this.invalidateOptionsMenu();
-        } else if (id == R.id.action_search) {
-            Intent intent = new Intent(this, SearchActivity.class);
-            startActivity(intent);
+//        } else if (id == R.id.action_search) {
+//            Intent intent = new Intent(this, SearchResultsActivity.class);
+//            startActivity(intent);
         } else if (id == R.id.action_filter) {
             FilterDialogFragment dialog = new FilterDialogFragment(this);
             dialog.show(getFragmentManager(), "dialog");
@@ -582,10 +604,10 @@ public class BlocSpotActivity extends AppCompatActivity
 
 //        String provider = mLocationManager.getBestProvider(new Criteria(), true);
 
-        Toast.makeText(this, getString(R.string.toast_no_gps), Toast.LENGTH_SHORT).show();
         Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
         if (location == null) {
+            Toast.makeText(this, getString(R.string.toast_no_gps), Toast.LENGTH_SHORT).show();
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
         } else {
             mLocation = location;

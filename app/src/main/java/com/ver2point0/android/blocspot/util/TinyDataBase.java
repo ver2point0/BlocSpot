@@ -1,6 +1,5 @@
 package com.ver2point0.android.blocspot.util;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;

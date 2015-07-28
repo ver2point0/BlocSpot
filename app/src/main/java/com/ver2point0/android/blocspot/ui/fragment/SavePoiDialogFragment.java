@@ -25,7 +25,7 @@ import com.ver2point0.android.blocspot.database.table.PoiTable;
 import com.ver2point0.android.blocspot.geofence.SimpleGeofence;
 import com.ver2point0.android.blocspot.geofence.SimpleGeofenceStore;
 import com.ver2point0.android.blocspot.places.Place;
-import com.ver2point0.android.blocspot.ui.activity.SearchActivity;
+import com.ver2point0.android.blocspot.ui.activity.SearchResultsActivity;
 import com.ver2point0.android.blocspot.util.Constants;
 
 import java.lang.reflect.Type;
@@ -126,7 +126,7 @@ public class SavePoiDialogFragment extends DialogFragment {
                 }.start();
                 Toast.makeText(mContext, mContext.getString(R.string.toast_poi_saved),
                         Toast.LENGTH_LONG).show();
-                ((SearchActivity) mContext).returnToMain();
+                ((SearchResultsActivity) mContext).returnToMain();
                 dismiss();
             }
         });

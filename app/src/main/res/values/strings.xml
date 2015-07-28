@@ -3,6 +3,10 @@
     <string name="app_name">Go Places</string>
 
     <string name="maps_api_key">AIzaSyBAUmIqphWvpc_YppTWRAfnCR_bno27ny4</string>
+    <string name="yelp_consumer_key">egN7UoIFSNDwxpQba7VDIw</string>
+    <string name="yelp_consumer_secret">8TAHSGUaYv3cYnlHW3M40D9B5WY</string>
+    <string name="yelp_token">votwHUl8cH6bx6wy9YTmtNVedAYpzUhe</string>
+    <string name="yelp_token_secret">MN-5JTzQNLXwjrieL5j5ydYgeAg</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_search">Search Activity</string>
     <string name="loading_message">Loading..</string>
@@ -46,8 +50,7 @@
     <string name="toast_no_gps">No GPS Signal</string>
     <string name="toast_no_network">No Network Connection</string>
 
-    <string name="empty_poi_list">You have not selected any Points of Interest!
-        \nClick the search button above to begin.</string>
+    <string name="empty_poi_list">Click the search button above to begin.</string>
 
     <string-array name="places">
         <item>ATM</item>
