@@ -16,19 +16,25 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.ver2point0.android.blocspot.R;
 import com.ver2point0.android.blocspot.adapter.PlacesSearchItemAdapter;
-import com.ver2point0.android.blocspot.api.YelpAPI;
+import com.ver2point0.android.blocspot.api.Yelp;
 import com.ver2point0.android.blocspot.places.Place;
 import com.ver2point0.android.blocspot.places.PlacesService;
 import com.ver2point0.android.blocspot.ui.fragment.SavePoiDialogFragment;
 import com.ver2point0.android.blocspot.util.Constants;
 import com.ver2point0.android.blocspot.util.Utils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class SearchResultsActivity extends FragmentActivity implements SavePoiDialogFragment.OnSavePoiInteractionListener {
 
@@ -39,6 +45,7 @@ public class SearchResultsActivity extends FragmentActivity implements SavePoiDi
     private ListView mSearchList;
     private String mQuery;
     PlacesSearchItemAdapter mAdapter;
+    private ArrayList<Business> mBusinessArrayList;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -52,10 +59,39 @@ public class SearchResultsActivity extends FragmentActivity implements SavePoiDi
         Utils.setContext(this);
         setContentView(R.layout.activity_search);
 
-        // Querying error lines 56-58 (pulled out of savedInstanceState)
+        mSearchList = (ListView) findViewById(R.id.lv_searchList);
+
+
+
         mQuery = getIntent().getStringExtra(BlocSpotActivity.SEARCH_QUERY);
-        YelpAPI yelpSearch = new YelpAPI();
-        yelpSearch.searchForBusinessesByLocation(mQuery, "Anchorage, AK");
+        new AsyncTask<Void, Void, ArrayList<Business>>() {
+            @Override
+            protected ArrayList<Business> doInBackground(Void... params) {
+                String jsonBusinesses = Yelp
+                        .getYelp(SearchResultsActivity.this)
+                        .search(mQuery, "Anchorage, AK");
+                try {
+                    return processJson(jsonBusinesses);
+                } catch (JSONException e) {
+                    return (ArrayList) Collections.<Business>emptyList();
+                }
+            }
+
+            @Override
+            protected void onPostExecute(ArrayList<Business> businessList) {
+                ArrayList<String> businessNameList = new ArrayList<String>();
+                for (Business b : businessList) {
+                    Log.i("SearchResults", b.name);
+                    businessNameList.add(b.name);
+                }
+                mBusinessArrayList = businessList;
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(SearchResultsActivity.this, android.R.layout.simple_list_item_1, businessNameList);
+                mSearchList.setAdapter(adapter);
+
+            }
+        }.execute();
+
 
         Utils.checkIfConnected();
         if (savedInstanceState != null) {
@@ -63,7 +99,7 @@ public class SearchResultsActivity extends FragmentActivity implements SavePoiDi
 
         }
 
-        mSearchList = (ListView) findViewById(R.id.lv_searchList);
+
 
         if (Utils.haveNetworkConnection()) {
             if (mQuery != null) {
@@ -82,6 +118,34 @@ public class SearchResultsActivity extends FragmentActivity implements SavePoiDi
             }
         });
     }
+
+    ArrayList<Business> processJson(String jsonStuff) throws JSONException {
+        JSONObject json = new JSONObject(jsonStuff);
+        JSONArray businesses = json.getJSONArray("businesses");
+        ArrayList<Business> businessObjs = new ArrayList<Business>(businesses.length());
+        for (int i = 0; i < businesses.length(); i++) {
+            JSONObject business = businesses.getJSONObject(i);
+            businessObjs.add(new Business(business.optString("name"), business.optString("mobile_url")));
+        }
+        return businessObjs;
+    }
+
+    class Business {
+        final String name;
+        final String url;
+
+        public Business(String name, String url) {
+            this.name = name;
+            this.url = url;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+
 
     @Override
     protected void onDestroy() {

@@ -3,10 +3,17 @@
     <string name="app_name">Go Places</string>
 
     <string name="maps_api_key">AIzaSyBAUmIqphWvpc_YppTWRAfnCR_bno27ny4</string>
+
+    <!--<string name="consumer_key">WXLEeaXH4I9650Pm6rTRRQ</string>-->
+    <!--<string name="consumer_secret">gpVyHSHUSDckGM9W1SRxivCkhVA</string>-->
+    <!--<string name="token">Li0AT4FziM8AKF9BsforGGjUJRIb7Q74</string>-->
+    <!--<string name="token_secret">6k7ZChsmFEeimwD0Vnp6TczIa38</string>-->
+
     <string name="yelp_consumer_key">egN7UoIFSNDwxpQba7VDIw</string>
     <string name="yelp_consumer_secret">8TAHSGUaYv3cYnlHW3M40D9B5WY</string>
     <string name="yelp_token">votwHUl8cH6bx6wy9YTmtNVedAYpzUhe</string>
     <string name="yelp_token_secret">MN-5JTzQNLXwjrieL5j5ydYgeAg</string>
+
     <string name="action_settings">Settings</string>
     <string name="title_activity_search">Search Activity</string>
     <string name="loading_message">Loading..</string>
