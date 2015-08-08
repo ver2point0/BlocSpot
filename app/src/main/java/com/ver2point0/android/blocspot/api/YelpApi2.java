@@ -6,7 +6,7 @@ import org.scribe.model.Token;
 /**
  * Generic service provider for two-step OAuth10a.
  */
-public class TwoStepOAuth extends DefaultApi10a {
+public class YelpApi2 extends DefaultApi10a {
 
     @Override
     public String getAccessTokenEndpoint() {
