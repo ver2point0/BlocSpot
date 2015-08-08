@@ -61,8 +61,6 @@ public class SearchResultsActivity extends FragmentActivity implements SavePoiDi
 
         mSearchList = (ListView) findViewById(R.id.lv_searchList);
 
-
-
         mQuery = getIntent().getStringExtra(BlocSpotActivity.SEARCH_QUERY);
         new AsyncTask<Void, Void, ArrayList<Business>>() {
             @Override
@@ -85,13 +83,10 @@ public class SearchResultsActivity extends FragmentActivity implements SavePoiDi
                     businessNameList.add(b.name);
                 }
                 mBusinessArrayList = businessList;
-
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(SearchResultsActivity.this, android.R.layout.simple_list_item_1, businessNameList);
                 mSearchList.setAdapter(adapter);
-
             }
         }.execute();
-
 
         Utils.checkIfConnected();
         if (savedInstanceState != null) {
